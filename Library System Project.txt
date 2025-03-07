@@ -1,0 +1,113 @@
+Library System Project
+
+*Core Functionalities*
+1. *Book and User Management (Linked List)*  
+   - Dynamically add and remove books and users.
+   - Update book and user information.
+
+2. *Fast Book Lookup by ISBN or Name (Hash Table)*  
+   - Quickly locate a book or user using its ISBN.
+
+3. *Action History and Navigation (Stack - LIFO)*  
+   - Store recent actions such as borrowing and returning books.
+   - Maintain a history of recently viewed books.
+
+4. *Waitlist for Borrow Requests (Queue - FIFO)*  
+   - Manage loan requests for books that are currently borrowed.
+   - Ensure requests are processed in order of arrival.
+
+5. *Efficient Book and User Organization (Binary Search Tree - BST)*  
+   - Store books and users in an ordered manner for efficient searching.
+   - Display books in alphabetical order or by code.
+   - Track borrowed books and their respective borrowers.
+
+---
+
+*Functions*
+
+User Management (Linked List)
+
+-add_user(name, user_id): Adds a new user to the system.
+
+-remove_user(user_id): Removes an existing user.
+
+-update_user(user_id, new_info): Updates user details.
+
+Book Management (Linked List)
+
+-add_book(title, author, isbn): Adds a new book.
+
+-remove_book(isbn): Removes an existing book.
+
+-update_book(isbn, new_info): Updates book details.
+
+Quick Search (Hash Table)
+
+-search_book(isbn): Searches for a book by ISBN.
+
+-search_book_by_name(title): Searches for a book by name.
+
+-search_user(user_id): Searches for a user by ID.
+
+Borrowing System (Stack & Queue)
+
+-borrow_book(user_id, isbn): Allows a user to borrow a book.
+
+-return_book(user_id, isbn): Allows a user to return a book.
+
+-enqueue_waitlist(user_id, isbn): Adds a user to the waitlist if the book is unavailable.
+
+-process_waitlist(isbn): Processes the next user in line for a borrowed book.
+
+Display Functions (BST)
+
+-display_all_users(): Displays all users in alphabetical order.
+
+-display_all_books(): Displays all books in alphabetical order.
+
+-display_borrowed_books(): Displays all borrowed books.
+
+-display_available_books(): Displays all available books.
+
+Action History (Stack)
+
+-undo_last_action(): Reverts the last performed action.
+
+System Control
+
+-exit_system(): Exits the program.
+
+---
+
+Display menu:
+
+
+1 - User Modification
+	add
+	remove
+2 - book modification
+	add
+	remove
+
+3 - quick search
+	book
+		Book Details
+	user
+		See user Details
+
+4 - Borrow book
+	borrow it
+	return it
+	Enqueue it
+	
+5 - Display
+	user
+ 		All user
+	Book
+		Display All books
+		Display borrowed books
+		Display available Books
+
+6 - Undo last action
+
+7 - Exit
