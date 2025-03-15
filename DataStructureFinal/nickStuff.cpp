@@ -146,7 +146,7 @@ void addUser(HashTable* ht) {
     lastName[strcspn(lastName, "\n")] = '\0';
 
     //Generate the hash for the user based on the last name (this is the userId)
-    userId = generateUserHash(lastName, TABLE_SIZE); // Pass table size for hashing
+    userId = generateUserHash(lastName); // Pass table size for hashing
     printf("Generated UserID (Hash): %d\n", userId); // Debugging output
 
     //Allocate memory for the new user
@@ -198,7 +198,7 @@ void addBook(HashTable* ht) {
     author[strcspn(author, "\n")] = '\0';
 
     //Generate the index number by the hash.
-    unsigned int index = generateBookHash(title, TABLE_SIZE);
+    unsigned int index = generateBookHash(title);
 
     //Allocate memory for book.
     Book* newBook = (Book*)malloc(sizeof(Book));
@@ -208,7 +208,7 @@ void addBook(HashTable* ht) {
     }
 
     //Add the values to the data memebrs for the Book. 
-    newBook->hashCode = generateBookHash(title, TABLE_SIZE);
+    newBook->hashCode = generateBookHash(title);
     strcpy_s(newBook->title, sizeof(newBook->title), title);
     strcpy_s(newBook->author, sizeof(newBook->author), author);
     newBook->borrowedBy = NULL;
@@ -252,7 +252,7 @@ User* searchUserByHash(HashTable* ht, int userHashCode) {
 
     User* current = ht->users[index];
     while (current) {
-        if (userHashCode == generateUserHash(current->lastName, TABLE_SIZE)) { 
+        if (userHashCode == generateUserHash(current->lastName)) { 
             return current; 
         }
         current = current->next; 
@@ -270,10 +270,13 @@ User* searchUserByHash(HashTable* ht, int userHashCode) {
 //
 void searchforBookByHash(HashTable* ht) {
 
-    //Initalize hash code variable and get input
-    unsigned int bookHashCode;
-    printf("Enter hash code to search for the book: ");
-    bookHashCode = GetValidIntegerInput();
+    int bookHashCode;
+    char title[MAX_TITLE_LEN];
+    //Get users last name for the search
+    printf("Enter the title you want to search for: \n");
+    fgets(title, sizeof(title), stdin);
+    title[strcspn(title, "\n")] = '\0';
+    bookHashCode = generateBookHash(title);
 
     //Search for the book using the hash code
     Book* foundBook = searchBookByHash(ht, bookHashCode);
@@ -294,12 +297,14 @@ void searchforBookByHash(HashTable* ht) {
 //
 void searchForUserByHash(HashTable* ht) {
     //Initialize the variable
-    int userHashCode;
+    int userHashCode = 0;
+    char lastName[MAX_NAME_LEN];
 
-    //Get hash code
-    printf("Enter the user hash code to search for: ");
-    userHashCode = GetValidIntegerInput();
-
+    //Get users last name for the search
+    printf("Enter the user's last name to search for: \n");
+    fgets(lastName, sizeof(lastName), stdin);  
+    lastName[strcspn(lastName, "\n")] = '\0';   
+    userHashCode = generateUserHash(lastName);
     User* user = searchUserByHash(ht, userHashCode);
 
     if (user) {
@@ -318,13 +323,13 @@ void searchForUserByHash(HashTable* ht) {
 // PARAMETERS : Pointer to the title and the tablesize   
 // RETURNS    : an integer value which is the hash key or index
 //
-int generateBookHash(const char* title, int tableSize) {
+int generateBookHash(const char* title) {
     unsigned int hash = 0;
     while (*title) {
         hash = (hash * 31) + *title;
         title++;
     }
-    return hash % tableSize; 
+    return hash % TABLE_SIZE; 
 }
 
 //
@@ -335,13 +340,13 @@ int generateBookHash(const char* title, int tableSize) {
 // PARAMETERS : pointer to the last name and the table size  
 // RETURNS    : an integer value with the hash value (index)     
 //
-int generateUserHash(const char* lastName, int tableSize) {
+int generateUserHash(const char* lastName) {
     unsigned int hash = 0;
     while (*lastName) {
         hash += *lastName;
         lastName++;
     }
-    return hash % tableSize;
+    return hash % TABLE_SIZE;
 }
 
 //
