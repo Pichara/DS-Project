@@ -164,9 +164,9 @@ int GetValidIntegerInput(void) {
 // RETURNS    : none    
 //
 void addUser(HashTable* ht) {
-    
-    //Initlaize variables
-    char firstName[MAX_NAME_LEN], lastName[MAX_NAME_LEN];
+    \
+        //Initlaize variables
+        char firstName[MAX_NAME_LEN], lastName[MAX_NAME_LEN];
     int userId;
 
     //Prompt the user for their first name
@@ -180,13 +180,13 @@ void addUser(HashTable* ht) {
     lastName[strcspn(lastName, "\n")] = '\0';
 
     //Generate the hash for the user based on the last name (this is the userId)
-    userId = generateUserHash(lastName); 
-    printf("Generated UserID (Hash): %d\n", userId); 
+    userId = generateUserHash(lastName); // Pass table size for hashing
+    printf("Generated UserID (Hash): %d\n", userId); // Debugging output
 
     //Allocate memory for the new user
     User* newUser = (User*)malloc(sizeof(User));
     if (newUser == NULL) {
-        printf("Memory allocation failed for new user!\n");
+        printf("Memory allocation failed for new user!\n"); // Debugging output
         return;
     }
 
@@ -241,7 +241,7 @@ void addBook(HashTable* ht) {
         return;
     }
 
-    //Add the values to the data members for the Book. 
+    //Add the values to the data memebrs for the Book. 
     newBook->hashCode = generateBookHash(title);
     strcpy_s(newBook->title, sizeof(newBook->title), title);
     strcpy_s(newBook->author, sizeof(newBook->author), author);
@@ -260,7 +260,7 @@ void addBook(HashTable* ht) {
 // RETURNS    : the pointer to the book with its information, should it exist
 //
 Book* searchBookByHash(const HashTable* ht, unsigned int hashCode) {
-    unsigned int index = hashCode % TABLE_SIZE;
+    unsigned int index = hashCode % TABLE_SIZE; // Calculate the index using the hash code
 
     //Traverse the linked list at that index
     Book* current = ht->table[index];
@@ -271,7 +271,7 @@ Book* searchBookByHash(const HashTable* ht, unsigned int hashCode) {
         current = current->next;
     }
 
-    return NULL;
+    return NULL;  // Return NULL if no book with that hash is found
 }
 
 //
@@ -282,7 +282,7 @@ Book* searchBookByHash(const HashTable* ht, unsigned int hashCode) {
 // RETURNS    : the pointer to the book with its information, should it exist
 //
 User* searchUserByHash(HashTable* ht, int userHashCode) {
-    int index = userHashCode % TABLE_SIZE; 
+    unsigned int index = userHashCode % TABLE_SIZE; 
 
     User* current = ht->users[index];
     while (current) {
@@ -330,7 +330,6 @@ void searchforBookByHash(HashTable* ht) {
 // RETURNS    : none    
 //
 void searchForUserByHash(HashTable* ht) {
-
     //Initialize the variable
     int userHashCode = 0;
     char lastName[MAX_NAME_LEN];

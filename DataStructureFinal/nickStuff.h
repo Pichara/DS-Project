@@ -76,3 +76,5 @@ void printUsers(HashTable* ht);
 void freeHashTable(HashTable* ht);
 void databaseMenu(HashTable* ht);
 void searchMenu(HashTable* ht);
+void manageUserMenu(HashTable* ht);
+void manageBookMenu(HashTable* ht);
