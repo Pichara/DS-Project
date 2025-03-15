@@ -72,6 +72,13 @@ void displayMainMenu() {
     printf("Enter your choice: ");
 }
 
+//
+// FUNCTION   : manageUserMenu  
+// DESCRIPTION: Secondary menu used when the user has selected they want to manage a book
+//                    
+// PARAMETERS : Pointer to the hash table   
+// RETURNS    : none    
+//
 void manageUserMenu(HashTable* ht) {
     manageUserOptions choice;
     printf("Please choose an option:\n");
@@ -90,6 +97,13 @@ void manageUserMenu(HashTable* ht) {
     }
 }
 
+//
+// FUNCTION   : manageBookMenu  
+// DESCRIPTION: Secondary menu used when the user has selected they want to manage a user
+//                    
+// PARAMETERS : Pointer to the hash table   
+// RETURNS    : none    
+//
 void manageBookMenu(HashTable* ht) {
     manageBookOptions choice;
     printf("Please choose an option:\n");
