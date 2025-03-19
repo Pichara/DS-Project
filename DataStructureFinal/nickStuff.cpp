@@ -1,4 +1,5 @@
 #include "nickStuff.h"
+#include "rodrigoStuff.h"
 
 //
 // FUNCTION   : mainMenu      
@@ -33,7 +34,7 @@ void mainMenu(void) {
             break;
         case CHECK_BOOKOUT:
 			printf("Process book for sign out:\n");
-			//checkOutMenu(&ht); //Pichara implementing...
+			checkOutMenu(&ht); //Pichara implementing...
             break;
         case DISPLAY_DB:
             printf("Displaying Database:\n");
