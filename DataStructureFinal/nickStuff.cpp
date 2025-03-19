@@ -64,7 +64,7 @@ void mainMenu(void) {
 // RETURNS    : none
 //
 void displayMainMenu() {
-    printf("\nLibAid Book System v1.01\n");
+    printf("\nLibAid Book System v1.02\n");
     printf("1. Manage users\n");
     printf("2. Manage books\n");
     printf("3. Search system\n");
@@ -95,10 +95,10 @@ void manageUserMenu(HashTable* ht) {
         addUser(ht);
         break;
     case REMOVE_USER:
-        break;
-		//removeUser(ht); //Pichara implementing...
-	case UPDATE_USER:
-		//updateUser(ht); //Pichara implementing...
+		removeUser(ht); //Pichara implementing...
+		break;
+    case UPDATE_USER:
+		updateUser(ht); //Pichara implementing...
 		break;
     default:
         printf("Please only enter the valid integer options (1,2)\n");
@@ -125,10 +125,12 @@ void manageBookMenu(HashTable* ht) {
         addBook(ht);
         break;
     case REMOVE_BOOK:
-		//removeBook(ht); //Pichara implementing...
+		printf("Remove book\n");
+		removeBook(ht); //Pichara implementing...
         break;
 	case UPDATE_BOOK:
-		//updateBook(ht); //Pichara implementing...
+		updateBook(ht); //Pichara implementing...
+        break;
     default:
         printf("Please only enter the valid integer options (1,2)\n");
     }
