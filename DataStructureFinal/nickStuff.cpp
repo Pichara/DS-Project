@@ -32,14 +32,16 @@ void mainMenu(void) {
             searchMenu(&ht);
             break;
         case CHECK_BOOKOUT:
-
+			printf("Process book for sign out:\n");
+			//checkOutMenu(&ht); //Pichara implementing...
             break;
         case DISPLAY_DB:
             printf("Displaying Database:\n");
             databaseMenu(&ht);
             break;
         case UNDO:
-
+			printf("Undoing last action:\n");
+			//Tatiana will implement this
             break;
         case EXIT:
             printf("Exiting program...\n");
@@ -84,6 +86,7 @@ void manageUserMenu(HashTable* ht) {
     printf("Please choose an option:\n");
     printf("1. Add a new user\n");
     printf("2. Remove exisitng user\n");
+	printf("3. Update existing user\n");
     printf("Enter your choice: ");
     choice = (manageUserOptions)GetValidIntegerInput();
     switch (choice) {
@@ -92,6 +95,10 @@ void manageUserMenu(HashTable* ht) {
         break;
     case REMOVE_USER:
         break;
+		//removeUser(ht); //Pichara implementing...
+	case UPDATE_USER:
+		//updateUser(ht); //Pichara implementing...
+		break;
     default:
         printf("Please only enter the valid integer options (1,2)\n");
     }
@@ -109,6 +116,7 @@ void manageBookMenu(HashTable* ht) {
     printf("Please choose an option:\n");
     printf("1. Add a books\n");
     printf("2. Remove existing book\n");
+	printf("3. Update existing book\n");
     printf("Enter your choice: ");
     choice = (manageBookOptions)GetValidIntegerInput();
     switch (choice) {
@@ -116,7 +124,10 @@ void manageBookMenu(HashTable* ht) {
         addBook(ht);
         break;
     case REMOVE_BOOK:
+		//removeBook(ht); //Pichara implementing...
         break;
+	case UPDATE_BOOK:
+		//updateBook(ht); //Pichara implementing...
     default:
         printf("Please only enter the valid integer options (1,2)\n");
     }
