@@ -21,35 +21,35 @@ void mainMenu(void) {
         choice = (mainMenuOptions)GetValidIntegerInput();
         switch (choice) {
         case MANAGE_USER:
-            printf("Manage Users:\n");
+            printf("\nManage Users:\n");
             manageUserMenu(&ht);
             break;
         case MANAGE_BOOK:
-            printf("Manage Books:\n");
+            printf("\nManage Books:\n");
             manageBookMenu(&ht);
             break;
         case SEARCH_SYS:
-            printf("Search System:\n");
+            printf("\nSearch System:\n");
             searchMenu(&ht);
             break;
         case CHECK_BOOKOUT:
-			printf("Process book for sign out:\n");
+			printf("\nProcess book for sign out:\n");
 			checkOutMenu(&ht); //Pichara implementing...
             break;
         case DISPLAY_DB:
-            printf("Displaying Database:\n");
+            printf("\nDisplaying Database:\n");
             databaseMenu(&ht);
             break;
         case UNDO:
-			printf("Undoing last action:\n");
+			printf("\nUndoing last action:\n");
 			//Tatiana will implement this
             break;
         case EXIT:
-            printf("Exiting program...\n");
+            printf("\nExiting program...\n");
             freeHashTable(&ht);
             return;
         default:
-            printf("Invalid choice! Try again.\n");
+            printf("\nInvalid choice! Try again.\n");
             break;
         }
     } while (choice != EXIT);

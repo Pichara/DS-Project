@@ -8,7 +8,10 @@
 //Importing nickStuff.h to use the HashTable struct and the function GetValidIntegerInput
 #include "nickStuff.h"
 
-
+typedef enum {
+    BORROW_BOOK = 1,
+	RETURN_BOOK,
+} checkOutOptions;
 
 void removeBook(HashTable* ht);
 void updateBook(HashTable* ht);

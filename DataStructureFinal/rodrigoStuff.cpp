@@ -297,16 +297,17 @@ void returnBook(HashTable* ht) {
 // RETURNS    : none
 //
 void checkOutMenu(HashTable* ht) {
+	checkOutOptions choice;
     printf("Please choose an option:\n");
     printf("1. Borrow a book\n");
     printf("2. Return a book\n");
     printf("Enter your choice: ");
-    int choice = GetValidIntegerInput();
+    choice = (checkOutOptions)GetValidIntegerInput();
     switch (choice) {
-    case 1:
+    case BORROW_BOOK:
         borrowBook(ht);
         break;
-    case 2:
+    case RETURN_BOOK:
         returnBook(ht);
         break;
     default:
