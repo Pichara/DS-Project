@@ -74,8 +74,8 @@ void searchForUserByHash(HashTable* ht);
 int generateBookHash(const char* title);
 int generateUserHash(const char* lastName);
 void initHashTable(HashTable* ht);
-void printBooks(const HashTable* ht);
-void printUsers(HashTable* ht);
+void printBooks(const HashTable* ht); //Nick, print sorted books using tree
+void printUsers(HashTable* ht); //Nick, print sorted users using tree
 void freeHashTable(HashTable* ht);
 void databaseMenu(HashTable* ht);
 void searchMenu(HashTable* ht);

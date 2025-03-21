@@ -13,6 +13,13 @@ typedef enum {
 	RETURN_BOOK,
 } checkOutOptions;
 
+
+//void saveUserInFile(HashTable* ht); Pichara Implementing
+//void removeUserInFile(HashTable* ht); Pichara Implementing
+//void saveBookInFile(HashTable* ht); Pichara Implementing
+//void removeBookInFile(HashTable* ht); Pichara Implementing
+//void updateBookInFile(HashTable* ht); Pichara Implementing
+
 void removeBook(HashTable* ht);
 void updateBook(HashTable* ht);
 void removeUser(HashTable* ht);

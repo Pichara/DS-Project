@@ -35,6 +35,8 @@ void removeBook(HashTable* ht) {
         current = current->next;
     }
     printf("Book '%s' not found\n", title);
+
+	//Remove the book from the file | Pichara implementing..
 }
 
 
@@ -106,6 +108,8 @@ void updateBook(HashTable* ht) {
         current = current->next;
     }
     printf("Book '%s' not found\n", oldTitle);
+
+	//Update the book in the file | Pichara implementing...
 }
 
 
@@ -145,6 +149,8 @@ void removeUser(HashTable* ht) {
         current = current->next;
     }
     printf("User '%s' not found\n", lastName);
+
+	//Remove the user from the file | Pichara implementing...
 }
 
 //

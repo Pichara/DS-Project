@@ -101,7 +101,7 @@ void manageUserMenu(HashTable* ht) {
 		updateUser(ht); //Pichara implementing...
 		break;
     default:
-        printf("Please only enter the valid integer options (1,2)\n");
+        printf("Please only enter the valid integer options (1,2,3)\n");
     }
 }
 
@@ -132,7 +132,7 @@ void manageBookMenu(HashTable* ht) {
 		updateBook(ht); //Pichara implementing...
         break;
     default:
-        printf("Please only enter the valid integer options (1,2)\n");
+        printf("Please only enter the valid integer options (1,2,3)\n");
     }
 }
 //
@@ -233,6 +233,8 @@ void addUser(HashTable* ht) {
 
     //Confirm the user was added
     printf("User %s %s with ID %d has been added.\n", firstName, lastName, userId);
+
+	//Add the data to a file for storage | Pichara implementing...
 }
 
 
@@ -278,6 +280,8 @@ void addBook(HashTable* ht) {
     ht->table[index] = newBook;
 
     printf("Book '%s' by '%s' has been added at index %d.\n", title, author, index);
+
+	//Add the data to a file for storage | Pichara implementing...
 }
 
 //
@@ -512,7 +516,7 @@ void databaseMenu(HashTable* ht) {
         printUsers(ht);
         break;
     default:
-        printf("Enter 1 or 2 only.\n");
+        printf("Please only enter the valid integer options (1,2)\n");
     }
 }
 
@@ -538,6 +542,6 @@ void searchMenu(HashTable* ht) {
         searchForUserByHash(ht);
         break;
     default:
-        printf("Enter 1 or 2 only.\n");
+        printf("Please only enter the valid integer options (1,2)\n");
     }
 }
