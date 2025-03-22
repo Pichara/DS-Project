@@ -12,7 +12,7 @@
 //
 void mainMenu(void) {
 
-    //Initialize data strcture(s)
+	//Initialize the hash table and start going into the main menu
     HashTable ht;
     initHashTable(&ht);
     mainMenuOptions choice;
@@ -393,16 +393,18 @@ void searchForUserByHash(HashTable* ht) {
 int generateBookHash(const char* title) {
     unsigned int hash = 0;
     while (*title) {
-        hash = (hash * 31) + *title;
+        hash += *title;
         title++;
     }
+
     return hash % TABLE_SIZE; 
 }
+
 
 //
 // FUNCTION   : generateUserHash   
 // DESCRIPTION: Generates the user hash by adding the ASCII value of each character in last name
-//              Modulused by the tablesiZe to ensure value in range.
+//              Modulused by the tablesize to ensure value in range.
 //                    
 // PARAMETERS : pointer to the last name and the table size  
 // RETURNS    : an integer value with the hash value (index)     

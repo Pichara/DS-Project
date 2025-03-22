@@ -1,4 +1,5 @@
 #include "nickStuff.h"
+#include "rodrigoStuff.h"
 
 //
 // FUNCTION   : mainMenu      
@@ -11,7 +12,7 @@
 //
 void mainMenu(void) {
 
-    //Initialize data strcture(s)
+	//Initialize the hash table and start going into the main menu
     HashTable ht;
     initHashTable(&ht);
     mainMenuOptions choice;
@@ -20,33 +21,35 @@ void mainMenu(void) {
         choice = (mainMenuOptions)GetValidIntegerInput();
         switch (choice) {
         case MANAGE_USER:
-            printf("Manage Users:\n");
+            printf("\nManage Users:\n");
             manageUserMenu(&ht);
             break;
         case MANAGE_BOOK:
-            printf("Manage Books:\n");
+            printf("\nManage Books:\n");
             manageBookMenu(&ht);
             break;
         case SEARCH_SYS:
-            printf("Search System:\n");
+            printf("\nSearch System:\n");
             searchMenu(&ht);
             break;
         case CHECK_BOOKOUT:
-
+			printf("\nProcess book for sign out:\n");
+			checkOutMenu(&ht); //Pichara implementing...
             break;
         case DISPLAY_DB:
-            printf("Displaying Database:\n");
+            printf("\nDisplaying Database:\n");
             databaseMenu(&ht);
             break;
         case UNDO:
-
+			printf("\nUndoing last action:\n");
+			//Tatiana will implement this
             break;
         case EXIT:
-            printf("Exiting program...\n");
+            printf("\nExiting program...\n");
             freeHashTable(&ht);
             return;
         default:
-            printf("Invalid choice! Try again.\n");
+            printf("\nInvalid choice! Try again.\n");
             break;
         }
     } while (choice != EXIT);
@@ -61,7 +64,7 @@ void mainMenu(void) {
 // RETURNS    : none
 //
 void displayMainMenu() {
-    printf("\nLibAid Book System v1.01\n");
+    printf("\nLibAid Book System v1.02\n");
     printf("1. Manage users\n");
     printf("2. Manage books\n");
     printf("3. Search system\n");
@@ -72,11 +75,19 @@ void displayMainMenu() {
     printf("Enter your choice: ");
 }
 
+//
+// FUNCTION   : manageUserMenu  
+// DESCRIPTION: Secondary menu used when the user has selected they want to manage a book
+//                    
+// PARAMETERS : Pointer to the hash table   
+// RETURNS    : none    
+//
 void manageUserMenu(HashTable* ht) {
     manageUserOptions choice;
     printf("Please choose an option:\n");
     printf("1. Add a new user\n");
     printf("2. Remove exisitng user\n");
+	printf("3. Update existing user\n");
     printf("Enter your choice: ");
     choice = (manageUserOptions)GetValidIntegerInput();
     switch (choice) {
@@ -84,17 +95,29 @@ void manageUserMenu(HashTable* ht) {
         addUser(ht);
         break;
     case REMOVE_USER:
-        break;
+		removeUser(ht); //Pichara implementing...
+		break;
+    case UPDATE_USER:
+		updateUser(ht); //Pichara implementing...
+		break;
     default:
-        printf("Please only enter the valid integer options (1,2)\n");
+        printf("Please only enter the valid integer options (1,2,3)\n");
     }
 }
 
+//
+// FUNCTION   : manageBookMenu  
+// DESCRIPTION: Secondary menu used when the user has selected they want to manage a user
+//                    
+// PARAMETERS : Pointer to the hash table   
+// RETURNS    : none    
+//
 void manageBookMenu(HashTable* ht) {
     manageBookOptions choice;
     printf("Please choose an option:\n");
     printf("1. Add a books\n");
     printf("2. Remove existing book\n");
+	printf("3. Update existing book\n");
     printf("Enter your choice: ");
     choice = (manageBookOptions)GetValidIntegerInput();
     switch (choice) {
@@ -102,9 +125,14 @@ void manageBookMenu(HashTable* ht) {
         addBook(ht);
         break;
     case REMOVE_BOOK:
+		printf("Remove book\n");
+		removeBook(ht); //Pichara implementing...
+        break;
+	case UPDATE_BOOK:
+		updateBook(ht); //Pichara implementing...
         break;
     default:
-        printf("Please only enter the valid integer options (1,2)\n");
+        printf("Please only enter the valid integer options (1,2,3)\n");
     }
 }
 //
@@ -164,9 +192,9 @@ int GetValidIntegerInput(void) {
 // RETURNS    : none    
 //
 void addUser(HashTable* ht) {
-    \
-        //Initlaize variables
-        char firstName[MAX_NAME_LEN], lastName[MAX_NAME_LEN];
+    
+    //Initlaize variables
+    char firstName[MAX_NAME_LEN], lastName[MAX_NAME_LEN];
     int userId;
 
     //Prompt the user for their first name
@@ -180,13 +208,13 @@ void addUser(HashTable* ht) {
     lastName[strcspn(lastName, "\n")] = '\0';
 
     //Generate the hash for the user based on the last name (this is the userId)
-    userId = generateUserHash(lastName); // Pass table size for hashing
-    printf("Generated UserID (Hash): %d\n", userId); // Debugging output
+    userId = generateUserHash(lastName); 
+    printf("Generated UserID (Hash): %d\n", userId); 
 
     //Allocate memory for the new user
     User* newUser = (User*)malloc(sizeof(User));
     if (newUser == NULL) {
-        printf("Memory allocation failed for new user!\n"); // Debugging output
+        printf("Memory allocation failed for new user!\n");
         return;
     }
 
@@ -205,6 +233,8 @@ void addUser(HashTable* ht) {
 
     //Confirm the user was added
     printf("User %s %s with ID %d has been added.\n", firstName, lastName, userId);
+
+	//Add the data to a file for storage | Pichara implementing...
 }
 
 
@@ -241,7 +271,7 @@ void addBook(HashTable* ht) {
         return;
     }
 
-    //Add the values to the data memebrs for the Book. 
+    //Add the values to the data members for the Book. 
     newBook->hashCode = generateBookHash(title);
     strcpy_s(newBook->title, sizeof(newBook->title), title);
     strcpy_s(newBook->author, sizeof(newBook->author), author);
@@ -250,6 +280,8 @@ void addBook(HashTable* ht) {
     ht->table[index] = newBook;
 
     printf("Book '%s' by '%s' has been added at index %d.\n", title, author, index);
+
+	//Add the data to a file for storage | Pichara implementing...
 }
 
 //
@@ -260,7 +292,7 @@ void addBook(HashTable* ht) {
 // RETURNS    : the pointer to the book with its information, should it exist
 //
 Book* searchBookByHash(const HashTable* ht, unsigned int hashCode) {
-    unsigned int index = hashCode % TABLE_SIZE; // Calculate the index using the hash code
+    unsigned int index = hashCode % TABLE_SIZE;
 
     //Traverse the linked list at that index
     Book* current = ht->table[index];
@@ -271,7 +303,7 @@ Book* searchBookByHash(const HashTable* ht, unsigned int hashCode) {
         current = current->next;
     }
 
-    return NULL;  // Return NULL if no book with that hash is found
+    return NULL;
 }
 
 //
@@ -282,7 +314,7 @@ Book* searchBookByHash(const HashTable* ht, unsigned int hashCode) {
 // RETURNS    : the pointer to the book with its information, should it exist
 //
 User* searchUserByHash(HashTable* ht, int userHashCode) {
-    unsigned int index = userHashCode % TABLE_SIZE; 
+    int index = userHashCode % TABLE_SIZE; 
 
     User* current = ht->users[index];
     while (current) {
@@ -330,6 +362,7 @@ void searchforBookByHash(HashTable* ht) {
 // RETURNS    : none    
 //
 void searchForUserByHash(HashTable* ht) {
+
     //Initialize the variable
     int userHashCode = 0;
     char lastName[MAX_NAME_LEN];
@@ -360,16 +393,18 @@ void searchForUserByHash(HashTable* ht) {
 int generateBookHash(const char* title) {
     unsigned int hash = 0;
     while (*title) {
-        hash = (hash * 31) + *title;
+        hash += *title;
         title++;
     }
-    return hash % TABLE_SIZE; 
+
+    return hash % TABLE_SIZE;  // Ensures hash is within table size
 }
+
 
 //
 // FUNCTION   : generateUserHash   
 // DESCRIPTION: Generates the user hash by adding the ASCII value of each character in last name
-//              Modulused by the tablesiZe to ensure value in range.
+//              Modulused by the tablesize to ensure value in range.
 //                    
 // PARAMETERS : pointer to the last name and the table size  
 // RETURNS    : an integer value with the hash value (index)     
@@ -483,7 +518,7 @@ void databaseMenu(HashTable* ht) {
         printUsers(ht);
         break;
     default:
-        printf("Enter 1 or 2 only.\n");
+        printf("Please only enter the valid integer options (1,2)\n");
     }
 }
 
@@ -509,6 +544,6 @@ void searchMenu(HashTable* ht) {
         searchForUserByHash(ht);
         break;
     default:
-        printf("Enter 1 or 2 only.\n");
+        printf("Please only enter the valid integer options (1,2)\n");
     }
 }
