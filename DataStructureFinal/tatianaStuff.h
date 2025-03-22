@@ -8,7 +8,7 @@
 #include <iostream>
 
 
-//importing nickStuff.h to use for ActionType and Action structures
+//Importing nickStuff.h to use for ActionType and Action structures
 #include "nickStuff.h"
 
 typedef enum {
@@ -33,18 +33,17 @@ typedef struct {
     PileNode* top;
 } Pile;
 
-extern Pile actionHistory;
+Pile actionHistory = { NULL }; 
 
 
 // Initialize the stack ✅
 // Check if the stack is empty ✅
 // Add an action to the stack ✅
 // Pop the most recent action from the stack ✅
-// Undo the last action (using the stack) ...
-
+// Undo the last action (using the stack) ✅
 void initStack(Pile* stack);
 int isEmpty(Pile* stack);
 void push(Pile* stack, Action action);
 Action pop(Pile* stack);
-void undo_last_action(Pile* actionHistory);
+void undo_last_action(HashTable* ht);
 void clearStack(Pile* stack);
