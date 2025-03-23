@@ -64,7 +64,7 @@ void mainMenu(void) {
 // RETURNS    : none
 //
 void displayMainMenu() {
-    printf("\nLibAid Book System v1.02\n");
+    printf("\nLibAid Book System v1.03\n");
     printf("1. Manage users\n");
     printf("2. Manage books\n");
     printf("3. Search system\n");
@@ -440,48 +440,6 @@ void initHashTable(HashTable* ht) {
 
 
 //
-// FUNCTION   : printBooks     
-// DESCRIPTION: prints out all of the books that are in the list
-//              THIS IS FOR DEBUG.  WHOEVER IS DOING TREES NEEDS TO MAKE A TREE TO DISPLAY RESULTS
-//                    
-// PARAMETERS : Pointer to the hash table   
-// RETURNS    : none
-//
-void printBooks(const HashTable* ht) {
-    for (int i = 0; i < TABLE_SIZE; i++) {
-        Book* current = ht->table[i];
-        while (current) {
-            printf("BookID: %d | Title: %s | Author: %s | %s\n", current->hashCode, current->title, current->author,
-                (current->borrowedBy ? "Borrowed" : "Available"));
-            current = current->next;
-        }
-    }
-}
-
-//
-// FUNCTION   : printUsers   
-// DESCRIPTION: prints out all of the users that are in the list
-//              THIS IS FOR DEBUG.  WHOEVER IS DOING TREES NEEDS TO MAKE A TREE TO DISPLAY RESULTS
-//                    
-// PARAMETERS : Pointer to the hash table    
-// RETURNS    : none    
-//
-void printUsers(HashTable* ht) {
-    printf("Listing all users:\n");
-
-    //Iterate over the entire hash table
-    for (int i = 0; i < TABLE_SIZE; i++) {
-        User* current = ht->users[i];
-
-        //If there are users at this index, print their details
-        while (current != NULL) {
-            printf("User ID: %d, Name: %s %s\n", current->userId, current->firstName, current->lastName);
-            current = current->next;
-        }
-    }
-}
-
-//
 // FUNCTION   : freeHashTable     
 // DESCRIPTION: Frees the memory allocated by the hash table
 //                    
@@ -500,32 +458,6 @@ void freeHashTable(HashTable* ht) {
     }
 }
 
-//
-// FUNCTION   : databaseMenu    
-// DESCRIPTION: Secondary menu to display the results of the users or books.
-//              
-//                    
-// PARAMETERS : Pointer to the hash table    
-// RETURNS    : none   
-//
-void databaseMenu(HashTable* ht) {
-    displayOptions choice;
-    printf("Please choose an option:\n");
-    printf("1. View all books\n");
-    printf("2. View all users\n");
-    printf("Enter your choice: ");
-    choice = (displayOptions)GetValidIntegerInput();
-    switch (choice) {
-    case DISP_BOOK:
-        printBooks(ht);
-        break;
-    case DISP_USER:
-        printUsers(ht);
-        break;
-    default:
-        printf("Please only enter the valid integer options (1,2)\n");
-    }
-}
 
 //
 // FUNCTION   : searchMenu    

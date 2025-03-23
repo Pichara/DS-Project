@@ -222,6 +222,10 @@ void updateUser(HashTable* ht) {
     printf("User '%s' not found\n", oldLastName);
 }
 
+
+// ================== QUEUE FUNCTIONS ==================
+
+
 //
 // FUNCTION   : borrowBook
 // DESCRIPTION: Called from checkOutMenu option 1  
@@ -345,6 +349,11 @@ void processBookMenu(HashTable* ht) {
 void enqueueUser(Book* book, User* user) {
     //Make a new node
     BookQueueNode* newNode = (BookQueueNode*)malloc(sizeof(BookQueueNode));
+	if (newNode == NULL) {
+		printf("Memory allocation failed\n");
+		return;
+	}
+
     newNode->user = user;
     newNode->next = NULL;
 
@@ -387,3 +396,261 @@ User* dequeueUser(Book* book) {
     return frontUser;
 }
 
+
+//
+// FUNCTION   : databaseMenu    
+// DESCRIPTION: Secondary menu to display the results of the users or books                    
+// PARAMETERS : Pointer to the hash table    
+// RETURNS    : none   
+//
+void databaseMenu(HashTable* ht) {
+    displayOptions choice;
+    printf("Please choose an option:\n");
+    printf("1. View all books\n");
+    printf("2. View all users\n");
+    printf("Enter your choice: ");
+    choice = (displayOptions)GetValidIntegerInput();
+    switch (choice) {
+    case DISP_BOOK:
+        printBooks(ht);
+        break;
+    case DISP_USER:
+        printUsers(ht);
+        break;
+    default:
+        printf("Please only enter the valid integer options (1,2)\n");
+    }
+}
+
+// ================== BINARY SEARCH TREE FUNCTIONS ==================
+// These functions are used to sort and display the users and books in a BST ( please dont touch it, risk of stop working by your own =))
+
+
+//
+// FUNCTION   : compareUsersById
+// DESCRIPTION: Compares two users by their userId(hash), for sorting purposes
+// PARAMETERS : u1 - first user, u2 - second user  
+// RETURNS    : -1 if u1 comes before u2, 0 if they are the same, 1 if u1 comes after u2
+//
+int compareUsersById(User* u1, User* u2) {
+    //Sorting by userId (the "hash", the index)
+    if (u1->userId < u2->userId) {
+        return -1;
+    }
+    if (u1->userId > u2->userId) {
+        return 1;
+    }
+    return 0;
+}
+
+
+//
+// FUNCTION   : compareBooksByIndex   
+// DESCRIPTION: Compares two books by their hashCode, for sorting purposes                 
+// PARAMETERS : b1 - first book, b2 - second book  
+// RETURNS    : -1 if b1 comes before b2, 0 if they are the same, 1 if b1 comes after b2
+//
+int compareBooksByIndex(Book* b1, Book* b2) {
+	//Checking if the book is borrowed or not
+    if (b1->borrowedBy == NULL && b2->borrowedBy != NULL) {
+        return -1;
+    }
+    if (b1->borrowedBy != NULL && b2->borrowedBy == NULL) {
+        return 1;
+    }
+
+    //If both are either available or borrowed, compare hashCode
+	//Negative if b1 comes before b2,
+    //Zero if both are the same
+    //Positive if b1 comes after b2
+    return b1->hashCode - b2->hashCode;
+}
+
+
+//
+// FUNCTION   : insertUserBST
+// DESCRIPTION: Inserts a user into a binary search tree, sorted by userId   
+// PARAMETERS : root - the root of the tree, user - the user to insert
+// RETURNS    : the new root of the tree
+//
+UserBSTNode* insertUserBST(UserBSTNode* root, User* user) {
+    if (!root) {
+        //Creates new node
+        UserBSTNode* newNode = (UserBSTNode*)malloc(sizeof(UserBSTNode));
+
+		//Check if the new node is NULL
+		if (newNode == NULL) {
+			printf("Memory allocation failed\n");
+			return NULL;
+		}
+        newNode->data = user;
+        newNode->left = newNode->right = NULL;
+        return newNode;
+    }
+
+	//Place the value in the right place of the tree
+    int cmp = compareUsersById(user, root->data);
+    if (cmp < 0) {
+        root->left = insertUserBST(root->left, user);
+    }
+    else {
+        root->right = insertUserBST(root->right, user);
+    }
+    return root;
+}
+
+//
+// FUNCTION   : insertBookBST   
+// DESCRIPTION: Inserts a book into a binary search tree, sorted by hashCode                 
+// PARAMETERS : root - the root of the tree, book - the book to insert  
+// RETURNS    : the new root of the tree
+//
+BookBSTNode* insertBookBST(BookBSTNode* root, Book* book) {
+    if (!root) {
+        //Creates new node
+        BookBSTNode* newNode = (BookBSTNode*)malloc(sizeof(BookBSTNode));
+		
+        //Check if the new node is NULL
+        if (newNode == NULL) {
+			printf("Memory allocation failed\n");
+			return NULL;
+		}
+		
+        newNode->data = book;
+        newNode->left = newNode->right = NULL;
+        return newNode;
+    }
+
+	//Place the value in the right place of the tree
+    int cmp = compareBooksByIndex(book, root->data);
+    if (cmp < 0) {
+        root->left = insertBookBST(root->left, book);
+    }
+    else {
+        root->right = insertBookBST(root->right, book);
+    }
+    return root;
+}
+
+//
+// FUNCTION   : inOrderPrintUsers
+// DESCRIPTION: Prints all users in a BST in ascending order of userId using recursive functions
+// PARAMETERS : root - the root of the tree
+// RETURNS    : none
+//
+void inOrderPrintUsers(UserBSTNode* root) {
+    if (!root) {
+        return;
+    }
+    
+    inOrderPrintUsers(root->left);
+
+    printf("User ID: %d | Name: %s %s\n",
+        root->data->userId,
+        root->data->firstName,
+        root->data->lastName);
+
+    inOrderPrintUsers(root->right);
+}
+
+//
+// FUNCTION   : freeUserBST   
+// DESCRIPTION: Frees all nodes in a user BST, but not the actual user objects                 
+// PARAMETERS : root - the root of the tree  
+// RETURNS    : none
+//
+void freeUserBST(UserBSTNode* root) {
+    if (!root) {
+        return;
+    }
+    freeUserBST(root->left);
+    freeUserBST(root->right);
+    free(root);
+}
+
+//
+// FUNCTION   : inOrderPrintBooks   
+// DESCRIPTION: Prints all books in a BST in ascending order of hashCode using recursive functions               
+// PARAMETERS : root - the root of the tree  
+// RETURNS    : none
+//
+void inOrderPrintBooks(BookBSTNode* root) {
+    if (!root) {
+        return;
+    }
+
+    inOrderPrintBooks(root->left);
+
+    //Print info
+    printf("BookID: %d | Title: %s | Author: %s | %s\n",
+        root->data->hashCode,
+        root->data->title,
+        root->data->author,
+        (root->data->borrowedBy ? "Borrowed" : "Available"));
+
+    inOrderPrintBooks(root->right);
+}
+
+//
+// FUNCTION   : freeBookBST   
+// DESCRIPTION: Frees all nodes in a book BST, but not the actual book objects                 
+// PARAMETERS : root - the root of the tree   
+// RETURNS    : none
+//
+void freeBookBST(BookBSTNode* root) {
+    if (!root) return;
+    freeBookBST(root->left);
+    freeBookBST(root->right);
+    free(root);
+}
+
+
+//
+// FUNCTION   : printUsers   
+// DESCRIPTION: Prints all users in the hash table in ascending order of userId                 
+// PARAMETERS : ht - the hash table  
+// RETURNS    : none
+//
+void printUsers(HashTable* ht) {
+    printf("Listing all users:\n");
+
+    UserBSTNode* root = NULL;
+
+    //Insert users from each index into BST
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        User* current = ht->users[i];
+        while (current) {
+            root = insertUserBST(root, current);
+            current = current->next;
+        }
+    }
+
+    inOrderPrintUsers(root);
+
+    freeUserBST(root);
+}
+
+//
+// FUNCTION   : printBooks   
+// DESCRIPTION: Prints all books in the hash table, first available then borrowed, in ascending order of hashCode                 
+// PARAMETERS : ht - the hash table  
+// RETURNS    : none
+//
+void printBooks(HashTable* ht) {
+    printf("Listing all books:\n");
+
+    BookBSTNode* root = NULL;
+
+    //Insert books from each index into BST
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        Book* current = ht->table[i];
+        while (current) {
+            root = insertBookBST(root, current);
+            current = current->next;
+        }
+    }
+
+    inOrderPrintBooks(root);
+
+    freeBookBST(root);
+}
