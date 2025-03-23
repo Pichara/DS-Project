@@ -45,5 +45,5 @@ void initStack(Pile* stack);
 int isEmpty(Pile* stack);
 void push(Pile* stack, Action action);
 Action pop(Pile* stack);
-void undo_last_action(HashTable* ht);
+//void undo_last_action(HashTable* ht); 
 void clearStack(Pile* stack);

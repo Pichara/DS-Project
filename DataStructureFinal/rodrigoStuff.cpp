@@ -1,5 +1,8 @@
 #include "rodrigoStuff.h"
 
+//Including nickstuff to use the user and book structures
+#include "nickStuff.h"
+
 //
 // FUNCTION   : removeBook
 // DESCRIPTION: removes a book from the hash table, using the title to find it               
@@ -226,19 +229,17 @@ void updateUser(HashTable* ht) {
 // RETURNS    : none
 //
 void borrowBook(HashTable* ht) {
-    //Ask for user's last name
     char lastName[MAX_NAME_LEN];
     printf("Enter the last name of the user who wants to borrow: ");
     fgets(lastName, sizeof(lastName), stdin);
     lastName[strcspn(lastName, "\n")] = '\0';
 
-    //Ask for book title
     char bookTitle[MAX_TITLE_LEN];
     printf("Enter the title of the book to borrow: ");
     fgets(bookTitle, sizeof(bookTitle), stdin);
     bookTitle[strcspn(bookTitle, "\n")] = '\0';
 
-    //Search user
+    //Look up user and book
     int userHash = generateUserHash(lastName);
     User* user = searchUserByHash(ht, userHash);
     if (!user) {
@@ -246,7 +247,6 @@ void borrowBook(HashTable* ht) {
         return;
     }
 
-    //Search book
     int bookHash = generateBookHash(bookTitle);
     Book* book = searchBookByHash(ht, bookHash);
     if (!book) {
@@ -254,16 +254,19 @@ void borrowBook(HashTable* ht) {
         return;
     }
 
-    //Check if book is already borrowed
+    //If it's borrowed, queue the user. Otherwise, assign borrowedBy
     if (book->borrowedBy) {
-        printf("Sorry, this book is already borrowed =(\n");
-        return;
+        printf("Book is currently borrowed; user '%s %s' added to the waiting queue\n",
+            user->firstName, user->lastName);
+        enqueueUser(book, user);
     }
-
-    //Assign the user to the borrowedBy pointer
-    book->borrowedBy = user;
-    printf("Book '%s' is now borrowed by '%s %s' =)\n", book->title, user->firstName, user->lastName);
+    else {
+        book->borrowedBy = user;
+        printf("Book '%s' is now borrowed by '%s %s'\n",
+            book->title, user->firstName, user->lastName);
+    }
 }
+
 
 //
 // FUNCTION   : borrowBook
@@ -274,7 +277,6 @@ void borrowBook(HashTable* ht) {
 void returnBook(HashTable* ht) {
     char bookTitle[MAX_TITLE_LEN];
 
-    //Ask for book title
     printf("Enter the title of the book to return: ");
     fgets(bookTitle, sizeof(bookTitle), stdin);
     bookTitle[strcspn(bookTitle, "\n")] = '\0';
@@ -282,19 +284,32 @@ void returnBook(HashTable* ht) {
     int bookHash = generateBookHash(bookTitle);
     Book* book = searchBookByHash(ht, bookHash);
     if (!book) {
-        printf("Book '%s' not found\n", bookTitle);
+        printf("Book '%s' not found.\n", bookTitle);
         return;
     }
 
-    //If the book is currently borrowed, free it up
+    //If it was borrowed, free it up. Then see if the queue has anyone waiting
     if (book->borrowedBy) {
-        printf("Book '%s' returned by '%s %s'\n", book->title, book->borrowedBy->firstName, book->borrowedBy->lastName);
+        printf("Book '%s' returned by '%s %s'\n",
+            book->title,
+            book->borrowedBy->firstName,
+            book->borrowedBy->lastName);
+
         book->borrowedBy = NULL;
+
+        //Dequeue the next waiting user, if any
+        User* nextUser = dequeueUser(book);
+        if (nextUser) {
+            //Immediately assign the book to the next user in queue
+            book->borrowedBy = nextUser;
+            printf("Book '%s' is now automatically borrowed by '%s %s'\n", book->title, nextUser->firstName, nextUser->lastName);
+        }
     }
     else {
         printf("That book was not borrowed\n");
     }
 }
+
 
 //
 // FUNCTION   : borrowBook
@@ -302,7 +317,7 @@ void returnBook(HashTable* ht) {
 // PARAMETERS : Pointer to the hash table 
 // RETURNS    : none
 //
-void checkOutMenu(HashTable* ht) {
+void processBookMenu(HashTable* ht) {
 	checkOutOptions choice;
     printf("Please choose an option:\n");
     printf("1. Borrow a book\n");
@@ -320,3 +335,55 @@ void checkOutMenu(HashTable* ht) {
         printf("Invalid choice!\n");
     }
 }
+
+//
+// FUNCTION   : enqueueUser
+// DESCRIPTION: Adds a user to the end of the queue for a book
+// PARAMETERS : book - the book to queue the user for
+// RETURNS    : none
+//
+void enqueueUser(Book* book, User* user) {
+    //Make a new node
+    BookQueueNode* newNode = (BookQueueNode*)malloc(sizeof(BookQueueNode));
+    newNode->user = user;
+    newNode->next = NULL;
+
+    if (book->queueRear == NULL) {
+        //Empty queue, front = rear = new node
+        book->queueFront = newNode;
+        book->queueRear = newNode;
+    }
+    else {
+        //Attach new node at the rear
+        book->queueRear->next = newNode;
+        book->queueRear = newNode;
+    }
+}
+
+
+//
+// FUNCTION   : dequeueUser
+// DESCRIPTION: Removes a user from the front of the queue for a book
+// PARAMETERS : book - the book to dequeue the user from
+// RETURNS    : the user that was dequeued, or NULL if the queue was empty
+//
+User* dequeueUser(Book* book) {
+    if (book->queueFront == NULL) {
+        //Queue is empty
+        return NULL;
+    }
+    //Take the user from the front
+    BookQueueNode* frontNode = book->queueFront;
+    User* frontUser = frontNode->user;
+
+    //Advance the front pointer
+    book->queueFront = frontNode->next;
+    if (book->queueFront == NULL) {
+        //Queue is now empty
+        book->queueRear = NULL;
+    }
+
+    free(frontNode);
+    return frontUser;
+}
+

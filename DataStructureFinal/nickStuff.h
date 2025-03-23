@@ -42,13 +42,6 @@ typedef enum {
 #define MAX_NAME_LEN 50
 #define TABLE_SIZE 1000 
 
-typedef struct Book {
-    int hashCode;
-    char title[100];
-    char author[100];
-    struct User* borrowedBy;
-    struct Book* next;
-} Book;
 
 typedef struct User {
     char firstName[50];
@@ -56,6 +49,21 @@ typedef struct User {
     int userId;
     struct User* next; 
 } User;
+
+typedef struct BookQueueNode {
+    User* user;
+    struct BookQueueNode* next;
+} BookQueueNode;
+
+typedef struct Book {
+    int hashCode;
+    char title[100];
+    char author[100];
+    struct User* borrowedBy;
+    BookQueueNode* queueFront;
+    BookQueueNode* queueRear;
+    struct Book* next;
+} Book;
 
 typedef struct HashTable {
     Book* table[TABLE_SIZE];

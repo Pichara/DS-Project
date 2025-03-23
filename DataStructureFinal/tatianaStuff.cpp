@@ -64,14 +64,14 @@ Action pop(Pile* stack) {
 // DESCRIPTION: Undoes the last action by popping from the pile
 // PARAMETERS: actionHistory - a pointer to the pile holding the action history
 // RETURNS: none
-void undo_last_action(Pile* actionHistory) {
-    if (isEmpty(actionHistory)) {
-        printf("No actions to undo.\n");
-        return;
-    }
-
-    // implementing...
-}
+//void undo_last_action(Pile* actionHistory) { 
+//    if (isEmpty(actionHistory)) {
+//        printf("No actions to undo.\n");
+//        return;
+//    }
+//
+//    // implementing...
+//}
 
 
 // FUNCTION: clearStack
@@ -84,4 +84,4 @@ void clearStack(Pile* stack) {
     }
 }
 
-Pile actionHistory;
+//Pile actionHistory;

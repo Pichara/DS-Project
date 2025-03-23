@@ -20,10 +20,13 @@ typedef enum {
 //void removeBookInFile(HashTable* ht); Pichara Implementing
 //void updateBookInFile(HashTable* ht); Pichara Implementing
 
+
 void removeBook(HashTable* ht);
 void updateBook(HashTable* ht);
 void removeUser(HashTable* ht);
 void updateUser(HashTable* ht);
-void checkOutMenu(HashTable* ht);
+void processBookMenu(HashTable* ht);
 void returnBook(HashTable* ht);
 void borrowBook(HashTable* ht);
+void enqueueUser(Book* book, User* user);
+User* dequeueUser(Book* book);

@@ -33,8 +33,8 @@ void mainMenu(void) {
             searchMenu(&ht);
             break;
         case CHECK_BOOKOUT:
-			printf("\nProcess book for sign out:\n");
-			checkOutMenu(&ht); //Pichara implementing...
+			printf("\nProcess book:\n");
+			processBookMenu(&ht); 
             break;
         case DISPLAY_DB:
             printf("\nDisplaying Database:\n");
@@ -68,7 +68,7 @@ void displayMainMenu() {
     printf("1. Manage users\n");
     printf("2. Manage books\n");
     printf("3. Search system\n");
-    printf("4. Process book for sign out.\n");
+    printf("4. Process book\n");
     printf("5. Display database\n");
     printf("6. Undo last action\n");
     printf("7. Exit the program\n");
@@ -276,6 +276,11 @@ void addBook(HashTable* ht) {
     strcpy_s(newBook->title, sizeof(newBook->title), title);
     strcpy_s(newBook->author, sizeof(newBook->author), author);
     newBook->borrowedBy = NULL;
+
+	//Initialize the queue pointers
+	newBook->queueFront = NULL;
+	newBook->queueRear = NULL;
+    
     newBook->next = ht->table[index];
     ht->table[index] = newBook;
 
