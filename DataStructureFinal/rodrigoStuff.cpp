@@ -40,6 +40,7 @@ void removeBook(HashTable* ht) {
     printf("Book '%s' not found\n", title);
 
 	//Remove the book from the file | Pichara implementing..
+    syncDatabaseToFile(ht, "database.txt");
 }
 
 
@@ -113,6 +114,7 @@ void updateBook(HashTable* ht) {
     printf("Book '%s' not found\n", oldTitle);
 
 	//Update the book in the file | Pichara implementing...
+    syncDatabaseToFile(ht, "database.txt");
 }
 
 
@@ -154,6 +156,7 @@ void removeUser(HashTable* ht) {
     printf("User '%s' not found\n", lastName);
 
 	//Remove the user from the file | Pichara implementing...
+    syncDatabaseToFile(ht, "database.txt");
 }
 
 //
@@ -220,6 +223,9 @@ void updateUser(HashTable* ht) {
         current = current->next;
     }
     printf("User '%s' not found\n", oldLastName);
+
+	//Update the user in the file | Pichara implementing...
+    syncDatabaseToFile(ht, "database.txt");
 }
 
 
@@ -269,6 +275,9 @@ void borrowBook(HashTable* ht) {
         printf("Book '%s' is now borrowed by '%s %s'\n",
             book->title, user->firstName, user->lastName);
     }
+	
+    //Update the file | Pichara implementing...
+    syncDatabaseToFile(ht, "database.txt");
 }
 
 
@@ -312,6 +321,9 @@ void returnBook(HashTable* ht) {
     else {
         printf("That book was not borrowed\n");
     }
+
+	//Update the file | Pichara implementing...
+    syncDatabaseToFile(ht, "database.txt");
 }
 
 
@@ -653,4 +665,140 @@ void printBooks(HashTable* ht) {
     inOrderPrintBooks(root);
 
     freeBookBST(root);
+}
+
+
+//================= FileIO =================
+
+
+//
+// FUNCTION   : loadDatabase 
+// DESCRIPTION: Loads the database from a file, populating the hash table with users and books             
+// PARAMETERS : ht - the hash table, filename - the name of the file to load from  
+// RETURNS    : none
+//
+void loadDatabase(HashTable* ht, const char* filename) {
+    FILE* file = NULL;
+	errno_t err = fopen_s(&file, filename, "a+"); //a+ creates the file if it doesn't exist
+    if (err != 0 || !file) {
+        printf("Error opening %s for reading...\n", filename);
+        return;
+    }
+
+    fseek(file, 0, SEEK_SET);
+    char line[256];
+
+	//Read each line and parse it, check if a its a book or user to write to the hash table
+    while (fgets(line, sizeof(line), file)) {
+        line[strcspn(line, "\n")] = '\0';
+           
+        //USER line format: USER,<userId>,<firstName>,<lastName>
+        if (strncmp(line, "USER,", 5) == 0) {
+            int userId;
+			char firstName[50] = { 0 };
+			char lastName[50] = { 0 };
+
+            if (sscanf_s(line + 5, "%d,%49[^,],%49[^\n]", &userId, firstName, (unsigned)_countof(firstName), lastName, (unsigned)_countof(lastName)) == 3)
+            {
+                User* newUser = (User*)malloc(sizeof(User));
+                if (!newUser) {
+                    printf("Memory allocation error for newUser\n");
+                    continue;
+                }
+                newUser->userId = userId;
+                strcpy_s(newUser->firstName, sizeof(newUser->firstName), firstName);
+                strcpy_s(newUser->lastName, sizeof(newUser->lastName), lastName);
+
+                int index = userId % TABLE_SIZE;
+                newUser->next = ht->users[index];
+                ht->users[index] = newUser;
+            }
+        }
+
+        //BOOK line format: BOOK,<hashCode>,<title>,<author>,<borrowedFlag>,<borrowedById>
+        else if (strncmp(line, "BOOK,", 5) == 0) {
+            int hashCode, borrowedFlag, borrowedById;
+			char title[100] = { 0 };
+			char author[100] = { 0 };
+
+            if (sscanf_s(line + 5, "%d,%99[^,],%99[^,],%d,%d", &hashCode, title, (unsigned)_countof(title), author, (unsigned)_countof(author), &borrowedFlag, &borrowedById) == 5)
+            {
+                Book* newBook = (Book*)malloc(sizeof(Book));
+                if (!newBook) {
+                    printf("Memory allocation error for newBook\n");
+                    continue;
+                }
+                newBook->hashCode = hashCode;
+                strcpy_s(newBook->title, sizeof(newBook->title), title);
+                strcpy_s(newBook->author, sizeof(newBook->author), author);
+
+                if (borrowedFlag == 1) {
+                    User* foundUser = searchUserByHash(ht, borrowedById);
+                    newBook->borrowedBy = foundUser;
+                }
+                else {
+                    newBook->borrowedBy = NULL;
+                }
+
+                newBook->queueFront = NULL;
+                newBook->queueRear = NULL;
+
+                int index = hashCode % TABLE_SIZE;
+                newBook->next = ht->table[index];
+                ht->table[index] = newBook;
+            }
+        }
+    }
+
+    fclose(file);
+    printf("Database loaded from %s\n", filename);
+}
+
+
+//
+// FUNCTION   : syncDatabaseToFile
+// DESCRIPTION: Writes the hash table to a file, overwriting the existing contents              
+// PARAMETERS : ht - the hash table, filename - the name of the file to write to
+// RETURNS    : none
+//
+void syncDatabaseToFile(HashTable* ht, const char* filename) {
+    FILE* file = NULL;
+    errno_t err = fopen_s(&file, filename, "w");
+    if (err != 0 || !file) {
+        printf("Error opening %s for writing\n", filename);
+        return;
+    }
+
+	//Write users
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        User* u = ht->users[i];
+        while (u) {
+            fprintf(file, "USER,%d,%s,%s\n", u->userId, u->firstName, u->lastName);
+            u = u->next;
+        }
+    }
+
+	//Write books
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        Book* b = ht->table[i];
+        while (b) {
+            int borrowedFlag;
+            int borrowedById;
+
+            if (b->borrowedBy != NULL) {
+                borrowedFlag = 1;
+                borrowedById = b->borrowedBy->userId;
+            }
+            else {
+                borrowedFlag = 0;
+                borrowedById = -1;
+            }
+
+            fprintf(file, "BOOK,%d,%s,%s,%d,%d\n", b->hashCode, b->title, b->author, borrowedFlag, borrowedById);
+
+            b = b->next;
+        }
+    }
+
+    fclose(file);
 }

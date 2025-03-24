@@ -31,11 +31,8 @@ typedef struct BookBSTNode {
 
 
 //File IO functions
-//void saveUserInFile(HashTable* ht); Pichara Implementing
-//void removeUserInFile(HashTable* ht); Pichara Implementing
-//void saveBookInFile(HashTable* ht); Pichara Implementing
-//void removeBookInFile(HashTable* ht); Pichara Implementing
-//void updateBookInFile(HashTable* ht); Pichara Implementing
+void loadDatabase(HashTable* ht, const char* filename);
+void syncDatabaseToFile(HashTable* ht, const char* filename);
 
 //Basic Logic Hash Table functions
 void removeBook(HashTable* ht);

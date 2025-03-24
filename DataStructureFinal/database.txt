@@ -1,0 +1,9 @@
+USER,309,Randon,Guy
+USER,392,Luisa,Diaz
+USER,420,Tatiana,Cruz
+USER,507,Rodrigo,Gomes
+USER,625,Nick,Reilly
+USER,696,Rodrigo,Pichara
+BOOK,349,C Fundamentals,Me,0,-1
+BOOK,432,A arte da guerra,Sun Tzu,0,-1
+BOOK,790,The design of everyday things,Sean,1,696

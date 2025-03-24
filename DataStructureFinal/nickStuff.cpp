@@ -15,6 +15,7 @@ void mainMenu(void) {
 	//Initialize the hash table and start going into the main menu
     HashTable ht;
     initHashTable(&ht);
+    loadDatabase(&ht, "database.txt");
     mainMenuOptions choice;
     do {
         displayMainMenu();
@@ -64,7 +65,7 @@ void mainMenu(void) {
 // RETURNS    : none
 //
 void displayMainMenu() {
-    printf("\nLibAid Book System v1.03\n");
+    printf("\nLibAid Book System v2.00\n");
     printf("1. Manage users\n");
     printf("2. Manage books\n");
     printf("3. Search system\n");
@@ -235,6 +236,7 @@ void addUser(HashTable* ht) {
     printf("User %s %s with ID %d has been added.\n", firstName, lastName, userId);
 
 	//Add the data to a file for storage | Pichara implementing...
+    syncDatabaseToFile(ht, "database.txt");
 }
 
 
@@ -286,7 +288,8 @@ void addBook(HashTable* ht) {
 
     printf("Book '%s' by '%s' has been added at index %d.\n", title, author, index);
 
-	//Add the data to a file for storage | Pichara implementing...
+	//Add the data to a file for storage | Pichara implementing..
+    syncDatabaseToFile(ht, "database.txt");
 }
 
 //
