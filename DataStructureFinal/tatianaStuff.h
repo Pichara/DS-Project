@@ -9,15 +9,17 @@
 //Importing nickStuff.h to use for ActionType and Action structures
 #include "nickStuff.h"
 
-typedef enum {
+typedef enum ActionType {
     ADD_ACTION = 1,
     REMOVE_ACTION,
     UPDATE_ACTION,
-    UNKNOWN_ACTION  
+    UNDO_ACTION,
+    SEARCH_ACTION,
+    UNKNOWN_ACTION
 } ActionType;
 
-typedef struct {
-    ActionType actionType;
+typedef struct Action {
+    int actionType;
     char description[100];
     char details[100];
 } Action;
@@ -27,15 +29,14 @@ typedef struct PileNode {
     struct PileNode* next;
 } PileNode;
 
-typedef struct {
+typedef struct Pile {
     PileNode* top;
 } Pile;
 
-Pile actionHistory = { NULL }; 
-
-void initStack(Pile* stack);
+Pile* initPile();
+PileNode* initPileNode();
 int isEmpty(Pile* stack);
 void push(Pile* stack, Action action);
 Action pop(Pile* stack);
-//void undo_last_action(HashTable* ht); 
+void undo_last_action(Pile* actionHistory);
 void clearStack(Pile* stack);
