@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <iostream>
-
 
 //Importing nickStuff.h to use for ActionType and Action structures
 #include "nickStuff.h"
@@ -35,12 +33,6 @@ typedef struct {
 
 Pile actionHistory = { NULL }; 
 
-
-// Initialize the stack ✅
-// Check if the stack is empty ✅
-// Add an action to the stack ✅
-// Pop the most recent action from the stack ✅
-// Undo the last action (using the stack) ✅
 void initStack(Pile* stack);
 int isEmpty(Pile* stack);
 void push(Pile* stack, Action action);
