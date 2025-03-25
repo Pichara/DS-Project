@@ -2,15 +2,38 @@
 //Test Harness
 
 #include "tatianaStuff.h"
-#include "nickStuff.h"  
 
 // FUNCTION: initStack
 // DESCRIPTION: Initializes the pile to be empty
 // PARAMETERS: stack - a pointer to the stack to be initialized
-// RETURNS: none
-void initStack(Pile* stack) {
-    stack->top = NULL;
+// RETURNS: Pile
+Pile* initPile() {
+    Pile* newPile = (Pile*)malloc(sizeof(Pile));
+    if (newPile == NULL) {
+        printf("Memory allocation error.\n");
+        return newPile;
+    }
+
+    newPile->top = NULL;
+    return newPile;
 }
+
+// FUNCTION: initPileNode
+// DESCRIPTION: 
+// PARAMETERS: 
+// RETURNS: 
+PileNode* initPileNode() {
+
+    PileNode* newPileNode = (PileNode*)malloc(sizeof(Pile));
+    if (newPileNode == NULL) {
+        printf("Memory allocation error.\n");
+        return NULL;
+    }
+    
+    newPileNode->next = NULL;
+    return newPileNode;
+}
+
 
 // FUNCTION: isEmpty
 // DESCRIPTION: Checks if the pile is empty
@@ -26,17 +49,13 @@ int isEmpty(Pile* stack) {
 //             action - the action to be pushed onto the pile
 // RETURNS: none
 void push(Pile* stack, Action action) {
-    PileNode* newNode = (PileNode*)malloc(sizeof(PileNode));
-    if (newNode == NULL) {
-        printf("Memory allocation error.\n");
-        return;
-    }
+ 
+    PileNode* newPileNode = (PileNode*)malloc(sizeof(PileNode));
+    newPileNode->action = action;
+    newPileNode->next = stack->top;
+    stack->top = newPileNode;
 
-    newNode->action = action;
-    newNode->next = stack->top;
-    stack->top = newNode;
-
-    printf("Pushed action: %s\n", action.description); 
+    printf("Pushed action: %s\n", action.description);
 }
 
 // FUNCTION: pop
@@ -64,24 +83,50 @@ Action pop(Pile* stack) {
 // DESCRIPTION: Undoes the last action by popping from the pile
 // PARAMETERS: actionHistory - a pointer to the pile holding the action history
 // RETURNS: none
-//void undo_last_action(Pile* actionHistory) { 
-//    if (isEmpty(actionHistory)) {
-//        printf("No actions to undo.\n");
-//        return;
-//    }
-//
-//    // implementing...
-//}
+void undo_last_action(Pile* actionHistory) {
+    if (actionHistory == NULL) {
+        printf("Error: actionHistory is NULL =(\n");
+        return;
+    }
 
+    if (isEmpty(actionHistory)) {
+        printf("No actions to undo.\n");
+        return;
+    }
+
+    Action lastAction = pop(actionHistory);
+
+    switch (lastAction.actionType) {
+    case ADD_ACTION:
+        printf("Reverted action: Added - %s\n", lastAction.description);
+        break;
+    case REMOVE_ACTION:
+        printf("Reverted action: Removed - %s\n", lastAction.description);
+        break;
+    case UPDATE_ACTION:
+        printf("Reverted action: Updated - %s\n", lastAction.description);
+        break;
+    case UNDO_ACTION:
+        printf("Action undone: %s\n", lastAction.description);
+        break;
+    case SEARCH_ACTION:
+        printf("Reverted action: Search - %s\n", lastAction.description);
+        break;
+    default:
+        printf("Unknown action type. Cannot undo.\n");
+    }
+}
 
 // FUNCTION: clearStack
 // DESCRIPTION: Clears all actions from the pile
 // PARAMETERS: stack - a pointer to the pile to be cleared
 // RETURNS: none
 void clearStack(Pile* stack) {
+
+    if (stack == NULL) return; 
     while (!isEmpty(stack)) {
+
         pop(stack);
+
     }
 }
-
-//Pile actionHistory;
