@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 typedef enum {
     ADD_ACTION,
@@ -11,7 +12,10 @@ typedef enum {
     UPDATE_ACTION,
     UNDO_ACTION,
     SEARCH_ACTION,
-    UNKNOWN_ACTION
+    UNKNOWN_ACTION,
+    PROCESS_ACTION,
+    DISPLAY_ACTION,
+    REVERT_ACTION,
 } ActionType;
 
 //Structure to store an action
@@ -19,6 +23,9 @@ typedef struct Action {
     int actionType;
     char description[100];
     char details[100];
+    int userId;             
+    char firstName[50];    
+    char lastName[50];
 } Action;
 
 //Node structure for the action stack (pile)
@@ -54,3 +61,4 @@ void recordAction(Pile* LastAction, ActionType actionType, const char* descripti
 void showUndoOptions(Pile* actionHistory);
 void actionHistory(Pile* actionHistory);
 void showActionHistory(Pile* actionHistory);
+void logAction(const char* actionType, const char* description, const char* details);
