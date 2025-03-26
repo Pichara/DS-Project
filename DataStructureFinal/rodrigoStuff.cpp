@@ -1,4 +1,5 @@
 #include "rodrigoStuff.h"
+#include "tatianaStuff.h"
 
 //Including nickstuff to use the user and book structures
 #include "nickStuff.h"
@@ -24,6 +25,12 @@ void removeBook(HashTable* ht) {
     //Search the linked list at that index for the matching book
     while (current != NULL) {
         if (current->hashCode == bookHashCode && strcmp(current->title, title) == 0) {
+           
+            //Before removing the book, record the action for undo
+            char actionDetails[256];
+            snprintf(actionDetails, sizeof(actionDetails), "Book '%s' by '%s' with hashCode %d was removed.", current->title, current->author, current->hashCode);
+            recordAction(LastAction, REMOVE_ACTION, "Remove Book", actionDetails);
+
             if (prev == NULL) {
                 ht->table[index] = current->next;
             }
@@ -39,7 +46,7 @@ void removeBook(HashTable* ht) {
     }
     printf("Book '%s' not found\n", title);
 
-	//Remove the book from the file | Pichara implementing..
+    //Remove the book from the file | Pichara implementing..
     syncDatabaseToFile(ht, "database.txt");
 }
 
@@ -62,9 +69,15 @@ void updateBook(HashTable* ht) {
 
     Book* current = ht->table[index];
     while (current != NULL) {
-		//If the book is found, asks for new title and author
+        //If the book is found, asks for new title and author
         if (current->hashCode == oldBookHash && strcmp(current->title, oldTitle) == 0) {
             char newTitle[MAX_TITLE_LEN], newAuthor[MAX_AUTHOR_LEN];
+
+            //Record the old state of the book for undo action
+            char actionDetails[256];
+            snprintf(actionDetails, sizeof(actionDetails), "Book '%s' by '%s' (ID: %d) was updated.",
+                current->title, current->author, current->hashCode);
+            recordAction(LastAction, UPDATE_ACTION, "Update Book", actionDetails); //record before making changes
 
             printf("Enter new title (leave blank to keep current): ");
             fgets(newTitle, sizeof(newTitle), stdin);
@@ -113,7 +126,7 @@ void updateBook(HashTable* ht) {
     }
     printf("Book '%s' not found\n", oldTitle);
 
-	//Update the book in the file | Pichara implementing...
+    //Update the book in the file | Pichara implementing...
     syncDatabaseToFile(ht, "database.txt");
 }
 
@@ -126,7 +139,7 @@ void updateBook(HashTable* ht) {
 //
 void removeUser(HashTable* ht) {
     char lastName[MAX_NAME_LEN];
-    
+
     printf("Enter the last name of the user to remove: ");
     fgets(lastName, sizeof(lastName), stdin);
     lastName[strcspn(lastName, "\n")] = '\0';
@@ -148,6 +161,12 @@ void removeUser(HashTable* ht) {
             }
             free(current);
             printf("User '%s' removed successfully\n", lastName);
+           
+            // Record the action when the user is removed
+            char actionDetails[256];
+            snprintf(actionDetails, sizeof(actionDetails), "User %s %s removed.", lastName, current->firstName);
+            recordAction(LastAction, REMOVE_ACTION, "Remove User", actionDetails);
+
             return;
         }
         prev = current;
@@ -155,7 +174,13 @@ void removeUser(HashTable* ht) {
     }
     printf("User '%s' not found\n", lastName);
 
-	//Remove the user from the file | Pichara implementing...
+    // Record the action when the user is not found
+    char actionDetails[256];
+    snprintf(actionDetails, sizeof(actionDetails), "User '%s' not found.", lastName);
+    recordAction(LastAction, REMOVE_ACTION, "Remove User", actionDetails);
+
+
+    //Remove the user from the file | Pichara implementing...
     syncDatabaseToFile(ht, "database.txt");
 }
 
@@ -217,6 +242,12 @@ void updateUser(HashTable* ht) {
                 temp->next = ht->users[newIndex];
                 ht->users[newIndex] = temp;
             }
+
+            // Record the action when the user is updated
+            char actionDetails[256];
+            snprintf(actionDetails, sizeof(actionDetails), "User %s updated (First Name: %s, Last Name: %s).", oldLastName, current->firstName, current->lastName);
+            recordAction(LastAction, UPDATE_ACTION, "Update User", actionDetails);
+
             printf("User updated successfully\n");
             return;
         }
@@ -224,7 +255,7 @@ void updateUser(HashTable* ht) {
     }
     printf("User '%s' not found\n", oldLastName);
 
-	//Update the user in the file | Pichara implementing...
+    //Update the user in the file | Pichara implementing...
     syncDatabaseToFile(ht, "database.txt");
 }
 
@@ -275,7 +306,7 @@ void borrowBook(HashTable* ht) {
         printf("Book '%s' is now borrowed by '%s %s'\n",
             book->title, user->firstName, user->lastName);
     }
-	
+
     //Update the file | Pichara implementing...
     syncDatabaseToFile(ht, "database.txt");
 }
@@ -322,7 +353,7 @@ void returnBook(HashTable* ht) {
         printf("That book was not borrowed\n");
     }
 
-	//Update the file | Pichara implementing...
+    //Update the file | Pichara implementing...
     syncDatabaseToFile(ht, "database.txt");
 }
 
@@ -334,7 +365,7 @@ void returnBook(HashTable* ht) {
 // RETURNS    : none
 //
 void processBookMenu(HashTable* ht) {
-	checkOutOptions choice;
+    checkOutOptions choice;
     printf("Please choose an option:\n");
     printf("1. Borrow a book\n");
     printf("2. Return a book\n");
@@ -361,10 +392,10 @@ void processBookMenu(HashTable* ht) {
 void enqueueUser(Book* book, User* user) {
     //Make a new node
     BookQueueNode* newNode = (BookQueueNode*)malloc(sizeof(BookQueueNode));
-	if (newNode == NULL) {
-		printf("Memory allocation failed\n");
-		return;
-	}
+    if (newNode == NULL) {
+        printf("Memory allocation failed\n");
+        return;
+    }
 
     newNode->user = user;
     newNode->next = NULL;
@@ -463,7 +494,7 @@ int compareUsersById(User* u1, User* u2) {
 // RETURNS    : -1 if b1 comes before b2, 0 if they are the same, 1 if b1 comes after b2
 //
 int compareBooksByIndex(Book* b1, Book* b2) {
-	//Checking if the book is borrowed or not
+    //Checking if the book is borrowed or not
     if (b1->borrowedBy == NULL && b2->borrowedBy != NULL) {
         return -1;
     }
@@ -472,7 +503,7 @@ int compareBooksByIndex(Book* b1, Book* b2) {
     }
 
     //If both are either available or borrowed, compare hashCode
-	//Negative if b1 comes before b2,
+    //Negative if b1 comes before b2,
     //Zero if both are the same
     //Positive if b1 comes after b2
     return b1->hashCode - b2->hashCode;
@@ -490,17 +521,17 @@ UserBSTNode* insertUserBST(UserBSTNode* root, User* user) {
         //Creates new node
         UserBSTNode* newNode = (UserBSTNode*)malloc(sizeof(UserBSTNode));
 
-		//Check if the new node is NULL
-		if (newNode == NULL) {
-			printf("Memory allocation failed\n");
-			return NULL;
-		}
+        //Check if the new node is NULL
+        if (newNode == NULL) {
+            printf("Memory allocation failed\n");
+            return NULL;
+        }
         newNode->data = user;
         newNode->left = newNode->right = NULL;
         return newNode;
     }
 
-	//Place the value in the right place of the tree
+    //Place the value in the right place of the tree
     int cmp = compareUsersById(user, root->data);
     if (cmp < 0) {
         root->left = insertUserBST(root->left, user);
@@ -521,19 +552,19 @@ BookBSTNode* insertBookBST(BookBSTNode* root, Book* book) {
     if (!root) {
         //Creates new node
         BookBSTNode* newNode = (BookBSTNode*)malloc(sizeof(BookBSTNode));
-		
+
         //Check if the new node is NULL
         if (newNode == NULL) {
-			printf("Memory allocation failed\n");
-			return NULL;
-		}
-		
+            printf("Memory allocation failed\n");
+            return NULL;
+        }
+
         newNode->data = book;
         newNode->left = newNode->right = NULL;
         return newNode;
     }
 
-	//Place the value in the right place of the tree
+    //Place the value in the right place of the tree
     int cmp = compareBooksByIndex(book, root->data);
     if (cmp < 0) {
         root->left = insertBookBST(root->left, book);
@@ -554,7 +585,7 @@ void inOrderPrintUsers(UserBSTNode* root) {
     if (!root) {
         return;
     }
-    
+
     inOrderPrintUsers(root->left);
 
     printf("User ID: %d | Name: %s %s\n",
@@ -679,7 +710,7 @@ void printBooks(HashTable* ht) {
 //
 void loadDatabase(HashTable* ht, const char* filename) {
     FILE* file = NULL;
-	errno_t err = fopen_s(&file, filename, "a+"); //a+ creates the file if it doesn't exist
+    errno_t err = fopen_s(&file, filename, "a+"); //a+ creates the file if it doesn't exist
     if (err != 0 || !file) {
         printf("Error opening %s for reading...\n", filename);
         return;
@@ -688,15 +719,15 @@ void loadDatabase(HashTable* ht, const char* filename) {
     fseek(file, 0, SEEK_SET);
     char line[256];
 
-	//Read each line and parse it, check if a its a book or user to write to the hash table
+    //Read each line and parse it, check if a its a book or user to write to the hash table
     while (fgets(line, sizeof(line), file)) {
         line[strcspn(line, "\n")] = '\0';
-           
+
         //USER line format: USER,<userId>,<firstName>,<lastName>
         if (strncmp(line, "USER,", 5) == 0) {
             int userId;
-			char firstName[50] = { 0 };
-			char lastName[50] = { 0 };
+            char firstName[50] = { 0 };
+            char lastName[50] = { 0 };
 
             if (sscanf_s(line + 5, "%d,%49[^,],%49[^\n]", &userId, firstName, (unsigned)_countof(firstName), lastName, (unsigned)_countof(lastName)) == 3)
             {
@@ -718,8 +749,8 @@ void loadDatabase(HashTable* ht, const char* filename) {
         //BOOK line format: BOOK,<hashCode>,<title>,<author>,<borrowedFlag>,<borrowedById>
         else if (strncmp(line, "BOOK,", 5) == 0) {
             int hashCode, borrowedFlag, borrowedById;
-			char title[100] = { 0 };
-			char author[100] = { 0 };
+            char title[100] = { 0 };
+            char author[100] = { 0 };
 
             if (sscanf_s(line + 5, "%d,%99[^,],%99[^,],%d,%d", &hashCode, title, (unsigned)_countof(title), author, (unsigned)_countof(author), &borrowedFlag, &borrowedById) == 5)
             {
@@ -769,7 +800,7 @@ void syncDatabaseToFile(HashTable* ht, const char* filename) {
         return;
     }
 
-	//Write users
+    //Write users
     for (int i = 0; i < TABLE_SIZE; i++) {
         User* u = ht->users[i];
         while (u) {
@@ -778,7 +809,7 @@ void syncDatabaseToFile(HashTable* ht, const char* filename) {
         }
     }
 
-	//Write books
+    //Write books
     for (int i = 0; i < TABLE_SIZE; i++) {
         Book* b = ht->table[i];
         while (b) {
