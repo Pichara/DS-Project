@@ -1,39 +1,24 @@
 //Undo = Stack part
-//Test Harness
 
 #include "tatianaStuff.h"
+#include "nickStuff.h"
 
-// FUNCTION: initStack
+Pile* LastAction = NULL;  
+
+// FUNCTION: initPile
 // DESCRIPTION: Initializes the pile to be empty
-// PARAMETERS: stack - a pointer to the stack to be initialized
-// RETURNS: Pile
+// PARAMETERS: none
+// RETURNS: Pointer to a new Pile
 Pile* initPile() {
     Pile* newPile = (Pile*)malloc(sizeof(Pile));
     if (newPile == NULL) {
         printf("Memory allocation error.\n");
-        return newPile;
+        return NULL;
     }
 
     newPile->top = NULL;
     return newPile;
 }
-
-// FUNCTION: initPileNode
-// DESCRIPTION: 
-// PARAMETERS: 
-// RETURNS: 
-PileNode* initPileNode() {
-
-    PileNode* newPileNode = (PileNode*)malloc(sizeof(Pile));
-    if (newPileNode == NULL) {
-        printf("Memory allocation error.\n");
-        return NULL;
-    }
-    
-    newPileNode->next = NULL;
-    return newPileNode;
-}
-
 
 // FUNCTION: isEmpty
 // DESCRIPTION: Checks if the pile is empty
@@ -49,13 +34,20 @@ int isEmpty(Pile* stack) {
 //             action - the action to be pushed onto the pile
 // RETURNS: none
 void push(Pile* stack, Action action) {
- 
+    if (stack == NULL) {
+        printf("Error: stack is NULL. Cannot push action.\n");
+        return;
+    }
+
     PileNode* newPileNode = (PileNode*)malloc(sizeof(PileNode));
+    if (newPileNode == NULL) {
+        printf("Memory allocation error.\n");
+        return;
+    }
+
     newPileNode->action = action;
     newPileNode->next = stack->top;
     stack->top = newPileNode;
-
-    printf("Pushed action: %s\n", action.description);
 }
 
 // FUNCTION: pop
@@ -74,7 +66,6 @@ Action pop(Pile* stack) {
     stack->top = stack->top->next;
     free(tempNode);
 
-    printf("Popped action: %s\n", action.description);  // Debugging output
     return action;
 }
 
@@ -84,49 +75,124 @@ Action pop(Pile* stack) {
 // PARAMETERS: actionHistory - a pointer to the pile holding the action history
 // RETURNS: none
 void undo_last_action(Pile* actionHistory) {
-    if (actionHistory == NULL) {
-        printf("Error: actionHistory is NULL =(\n");
-        return;
-    }
-
-    if (isEmpty(actionHistory)) {
+    if (actionHistory == NULL || isEmpty(actionHistory)) {
         printf("No actions to undo.\n");
         return;
     }
 
     Action lastAction = pop(actionHistory);
-
-    switch (lastAction.actionType) {
-    case ADD_ACTION:
+    if (lastAction.actionType == ADD_ACTION) {
         printf("Reverted action: Added - %s\n", lastAction.description);
-        break;
-    case REMOVE_ACTION:
+    }
+    else if (lastAction.actionType == REMOVE_ACTION) {
         printf("Reverted action: Removed - %s\n", lastAction.description);
-        break;
-    case UPDATE_ACTION:
+    }
+    else if (lastAction.actionType == UPDATE_ACTION) {
         printf("Reverted action: Updated - %s\n", lastAction.description);
-        break;
-    case UNDO_ACTION:
-        printf("Action undone: %s\n", lastAction.description);
-        break;
-    case SEARCH_ACTION:
-        printf("Reverted action: Search - %s\n", lastAction.description);
-        break;
-    default:
-        printf("Unknown action type. Cannot undo.\n");
+    }
+    else {
+        printf("Unknown action. No revert logic implemented.\n");
     }
 }
 
 // FUNCTION: clearStack
-// DESCRIPTION: Clears all actions from the pile
+// DESCRIPTION: Clears all actions from the pile and frees memory
 // PARAMETERS: stack - a pointer to the pile to be cleared
 // RETURNS: none
-void clearStack(Pile* stack) {
+void clearStack(Pile** stack) {  
+    if (stack == NULL || *stack == NULL) return;
+    while (!isEmpty(*stack)) {
+        pop(*stack);
+    }
+    free(*stack);
+    *stack = NULL;
+}
 
-    if (stack == NULL) return; 
-    while (!isEmpty(stack)) {
+// FUNCTION   : recordAction
+// DESCRIPTION: Registers an action (like add, remove, or update) into the action stack.
+//              It stores information about the action in a structure and adds it to the stack.
+// PARAMETERS : 
+//     - LastAction: A pointer to the Pile where the action will be recorded.
+//     - actionType: The type of the action (e.g., ADD_ACTION, REMOVE_ACTION, etc.)
+//     - description: A short description of the action (e.g., "Add user", "Remove book").
+//     - details: A more detailed description of the action (e.g., "Added user John Doe" or "Removed book ABC").
+// RETURNS    : none
+//
+void recordAction(Pile* LastAction, ActionType actionType, const char* description, const char* details) {
+    if (LastAction == NULL) {
+        printf("Error: LastAction is NULL.\n");
+        return;
+    }
 
-        pop(stack);
+    Action action;
+    action.actionType = actionType;
 
+    snprintf(action.description, sizeof(action.description), "%s", description);
+    snprintf(action.details, sizeof(action.details), "%s", details);
+
+    action.description[sizeof(action.description) - 1] = '\0';
+    action.details[sizeof(action.details) - 1] = '\0';
+
+    push(LastAction, action);
+
+}
+
+// FUNCTION   : showUndoOptions
+// DESCRIPTION: Muestra las opciones para deshacer la última acción o ver el historial de acciones.
+// PARAMETERS : None
+// RETURNS    : none
+void showUndoOptions(Pile* actionHistory) {
+    int choice;
+
+    printf("\nSelect an option:\n");
+    printf("1. Action History\n");
+    printf("2. Undo last action\n");
+    printf("Enter your choice: ");
+    choice = GetValidIntegerInput();
+
+    switch (choice) {
+    case 1:
+        showActionHistory(actionHistory);
+        break;
+    case 2:
+        undo_last_action(actionHistory);
+        break;
+    default:
+        printf("Invalid choice. Please select again.\n");
+        break;
+    }
+}
+
+// FUNCTION   : ActionHistory
+// DESCRIPTION: Muestra el historial de acciones almacenadas en la pila de acciones.
+// PARAMETERS : actionHistory - La pila de acciones que contiene el historial de acciones.
+// RETURNS    : none
+void actionHistory(Pile* actionHistory) {
+    if (actionHistory == NULL || isEmpty(actionHistory)) {
+        printf("No actions in history.\n");
+        return;
+    }
+
+    PileNode* topAction = actionHistory->top;
+    if (topAction != NULL) {
+        printf("Last action: %s\n", topAction->action.description);
+    }
+}
+
+// FUNCTION   : showActionHistory
+// DESCRIPTION: Muestra el historial de acciones almacenadas en la pila de acciones.
+// PARAMETERS : actionHistory - La pila de acciones que contiene el historial de acciones.
+// RETURNS    : none
+void showActionHistory(Pile* actionHistory) {
+    if (actionHistory == NULL || isEmpty(actionHistory)) {
+        printf("No actions in history.\n");
+        return;
+    }
+
+    PileNode* current = actionHistory->top;
+    printf("\nAction History:\n");
+    while (current != NULL) {
+        printf("Action: %s - %s\n", current->action.description, current->action.details);
+        current = current->next;
     }
 }
