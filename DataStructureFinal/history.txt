@@ -1,0 +1,5 @@
+[2025-03-26 14:20:55] Database loaded from database.txt
+[2025-03-26 14:21:30] Database loaded from database.txt
+[2025-03-26 14:22:54] Add User: User Madhan Chandrasekan with ID 430 has been added. - Added
+[2025-03-26 14:23:30] Add Book: Book 'Data Structures' by 'Madhan' has been added at index 502. - Added
+[2025-03-26 14:24:24] Update User: User Chandrasekaran updated (First Name: Madhan, Last Name: Chandrasekaran). - Updated
