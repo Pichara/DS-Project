@@ -13,52 +13,49 @@
 //
 void mainMenu(void) {
 
-    //Initialize the stack to track actions
-    LastAction = initPile();
-
-    //Initialize the hash table and start going into the main menu
+	//Initialize the hash table and start going into the main menu
     HashTable ht;
-
     initHashTable(&ht);
+    SnapshotStack* myUndoStack = initSnapshotStack();
     loadDatabase(&ht, "database.txt");
-
     mainMenuOptions choice;
-    do {
-        displayMainMenu();
-        choice = (mainMenuOptions)GetValidIntegerInput();
-        switch (choice) {
-        case MANAGE_USER:
-            printf("\nManage Users:\n");
-            manageUserMenu(&ht);
-            break;
-        case MANAGE_BOOK:
-            printf("\nManage Books:\n");
-            manageBookMenu(&ht);
-            break;
-        case SEARCH_SYS:
-            printf("\nSearch System:\n");
-            searchMenu(&ht);
-            break;
-        case CHECK_BOOKOUT:
-            printf("\nProcess book:\n");
-            processBookMenu(&ht);
-            break;
-        case DISPLAY_DB:
-            printf("\nDisplaying Database:\n");
-            databaseMenu(&ht);
-            break;
-        case UNDO:
-            showUndoOptions(LastAction);
-            break;
-        case EXIT:
-            printf("\nExiting program...\n");
-            freeHashTable(&ht);
-            return;
-        default:
-            printf("\nInvalid choice! Try again.\n");
-            break;
-        }
-    } while (choice != EXIT);
+            do {
+                displayMainMenu();
+                choice = (mainMenuOptions)GetValidIntegerInput();
+                switch (choice) {
+                case MANAGE_USER:
+                    printf("\nManage Users:\n");
+					manageUserMenu(&ht, myUndoStack);
+                    break;
+                case MANAGE_BOOK:
+                    printf("\nManage Books:\n");
+                    manageBookMenu(&ht, myUndoStack);
+                    break;
+                case SEARCH_SYS:
+                    printf("\nSearch System:\n");
+                    searchMenu(&ht);
+                    break;
+                case CHECK_BOOKOUT:
+			        printf("\nProcess book:\n");
+					processBookMenu(&ht, myUndoStack);
+                    break;
+                case DISPLAY_DB:
+                    printf("\nDisplaying Database:\n");
+                    databaseMenu(&ht);
+                    break;
+                case UNDO:
+			        printf("\nUndoing last action:\n");
+			        undo_last_action(&ht, myUndoStack);
+                    break;
+                case EXIT:
+                    printf("\nExiting program...\n");
+                    freeHashTable(&ht);
+                    return;
+                default:
+                    printf("\nInvalid choice! Try again.\n");
+                    break;
+                }
+            } while (choice != EXIT);
 
 }
 
@@ -88,53 +85,61 @@ void displayMainMenu() {
 // PARAMETERS : Pointer to the hash table   
 // RETURNS    : none    
 //
-void manageUserMenu(HashTable* ht) {
+void manageUserMenu(HashTable* ht, SnapshotStack* undoStack) {
     manageUserOptions choice;
     printf("Please choose an option:\n");
     printf("1. Add a new user\n");
-    printf("2. Remove existing user\n");
-    printf("3. Update existing user\n");
+    printf("2. Remove exisitng user\n");
+	printf("3. Update existing user\n");
     printf("Enter your choice: ");
     choice = (manageUserOptions)GetValidIntegerInput();
     switch (choice) {
     case ADD_USER:
+        pushSnapshot(ht, undoStack);
         addUser(ht);
         break;
     case REMOVE_USER:
-        removeUser(ht); //Pichara implementing...
-        break;
+        pushSnapshot(ht, undoStack);
+		removeUser(ht); //Pichara implementing...
+		break;
     case UPDATE_USER:
-        updateUser(ht); //Pichara implementing...
-        break;
+        pushSnapshot(ht, undoStack);
+		updateUser(ht); //Pichara implementing...
+		break;
     default:
         printf("Please only enter the valid integer options (1,2,3)\n");
     }
 }
 
+//
 // FUNCTION   : manageBookMenu  
 // DESCRIPTION: Secondary menu used when the user has selected they want to manage a user
 //                    
 // PARAMETERS : Pointer to the hash table   
 // RETURNS    : none    
 //
-void manageBookMenu(HashTable* ht) {
+void manageBookMenu(HashTable* ht, SnapshotStack* undoStack) {
     manageBookOptions choice;
     printf("Please choose an option:\n");
     printf("1. Add a books\n");
     printf("2. Remove existing book\n");
-    printf("3. Update existing book\n");
+	printf("3. Update existing book\n");
     printf("Enter your choice: ");
     choice = (manageBookOptions)GetValidIntegerInput();
     switch (choice) {
     case ADD_BOOK:
+        pushSnapshot(ht, undoStack);
         addBook(ht);
         break;
     case REMOVE_BOOK:
-        printf("Remove book\n");
-        removeBook(ht); //Pichara implementing...
+		printf("Remove book\n");
+		pushSnapshot(ht, undoStack);
+		removeBook(ht); //Pichara implementing...
         break;
-    case UPDATE_BOOK:
-        updateBook(ht); //Pichara implementing...
+	case UPDATE_BOOK:
+		printf("Update book\n");
+		pushSnapshot(ht, undoStack);
+		updateBook(ht); //Pichara implementing...
         break;
     default:
         printf("Please only enter the valid integer options (1,2,3)\n");
@@ -197,8 +202,8 @@ int GetValidIntegerInput(void) {
 // RETURNS    : none    
 //
 void addUser(HashTable* ht) {
-
-    //Initialize variables
+    
+    //Initlaize variables
     char firstName[MAX_NAME_LEN], lastName[MAX_NAME_LEN];
     int userId;
 
@@ -213,8 +218,8 @@ void addUser(HashTable* ht) {
     lastName[strcspn(lastName, "\n")] = '\0';
 
     //Generate the hash for the user based on the last name (this is the userId)
-    userId = generateUserHash(lastName);
-    printf("Generated UserID (Hash): %d\n", userId);
+    userId = generateUserHash(lastName); 
+    printf("Generated UserID (Hash): %d\n", userId); 
 
     //Allocate memory for the new user
     User* newUser = (User*)malloc(sizeof(User));
@@ -239,13 +244,7 @@ void addUser(HashTable* ht) {
     //Confirm the user was added
     printf("User %s %s with ID %d has been added.\n", firstName, lastName, userId);
 
-    //Store the action details
-    char actionDetails[256];
-    snprintf(actionDetails, sizeof(actionDetails), "User %s %s with ID %d has been added.", firstName, lastName, userId);
-    recordAction(LastAction, ADD_ACTION, "Add User", actionDetails);
-
-
-    //Add the data to a file for storage | Pichara implementing...
+	//Add the data to a file for storage | Pichara implementing...
     syncDatabaseToFile(ht, "database.txt");
 }
 
@@ -289,21 +288,16 @@ void addBook(HashTable* ht) {
     strcpy_s(newBook->author, sizeof(newBook->author), author);
     newBook->borrowedBy = NULL;
 
-    //Initialize the queue pointers
-    newBook->queueFront = NULL;
-    newBook->queueRear = NULL;
-
+	//Initialize the queue pointers
+	newBook->queueFront = NULL;
+	newBook->queueRear = NULL;
+    
     newBook->next = ht->table[index];
     ht->table[index] = newBook;
 
     printf("Book '%s' by '%s' has been added at index %d.\n", title, author, index);
 
-    //Record the action for adding the book
-    char actionDetails[256];
-    snprintf(actionDetails, sizeof(actionDetails), "Book '%s' by '%s' has been added at index %d.", title, author, index);
-    recordAction(LastAction, ADD_ACTION, "Add Book", actionDetails);
-
-    //Add the data to a file for storage | Pichara implementing..
+	//Add the data to a file for storage | Pichara implementing..
     syncDatabaseToFile(ht, "database.txt");
 }
 
@@ -320,22 +314,11 @@ Book* searchBookByHash(const HashTable* ht, unsigned int hashCode) {
     //Traverse the linked list at that index
     Book* current = ht->table[index];
     while (current != NULL) {
-        if (current->hashCode == hashCode) {
-
-            // Record the action when the book is found
-            char actionDetails[256];
-            snprintf(actionDetails, sizeof(actionDetails), "Book with hash %u found: '%s' by '%s'.", hashCode, current->title, current->author);
-            recordAction(LastAction, ADD_ACTION, "Search Book", actionDetails);
-
+        if (current->hashCode == hashCode) {  
             return current;
         }
         current = current->next;
     }
-
-    // If the book is not found, record the action
-    char actionDetails[256];
-    snprintf(actionDetails, sizeof(actionDetails), "Book with hash %u not found.", hashCode);
-    recordAction(LastAction, ADD_ACTION, "Search Book", actionDetails);
 
     return NULL;
 }
@@ -348,28 +331,15 @@ Book* searchBookByHash(const HashTable* ht, unsigned int hashCode) {
 // RETURNS    : the pointer to the book with its information, should it exist
 //
 User* searchUserByHash(HashTable* ht, int userHashCode) {
-    int index = userHashCode % TABLE_SIZE;
+    int index = userHashCode % TABLE_SIZE; 
 
     User* current = ht->users[index];
     while (current) {
-        if (userHashCode == generateUserHash(current->lastName)) {
-            
-            // Record the action when the user is found
-            char actionDetails[256];
-            snprintf(actionDetails, sizeof(actionDetails), "User with hash %d found: '%s' '%s' (ID: %d).",
-                userHashCode, current->firstName, current->lastName, current->userId);
-            recordAction(LastAction, ADD_ACTION, "Search User", actionDetails);
-            
-            return current;
+        if (userHashCode == generateUserHash(current->lastName)) { 
+            return current; 
         }
-        current = current->next;
+        current = current->next; 
     }
-
-    // If the user is not found, record the action
-    char actionDetails[256];
-    snprintf(actionDetails, sizeof(actionDetails), "User with hash %d not found.", userHashCode);
-    recordAction(LastAction, ADD_ACTION, "Search User", actionDetails);
-
     return NULL;
 }
 
@@ -395,20 +365,9 @@ void searchforBookByHash(HashTable* ht) {
     Book* foundBook = searchBookByHash(ht, bookHashCode);
     if (foundBook != NULL) {
         printf("Book found: Title: %s, Author: %s\n", foundBook->title, foundBook->author);
-    
-        // Register the action if the book was found
-        char actionDetails[256];
-        snprintf(actionDetails, sizeof(actionDetails), "Book '%s' by '%s' found with hash code %u.", foundBook->title, foundBook->author, bookHashCode);
-        recordAction(LastAction, ADD_ACTION, "Search Book", actionDetails);
     }
-
     else {
         printf("No book found with hash code %u\n", bookHashCode);
-        
-        // Register the action if the book was not found
-        char actionDetails[256];
-        snprintf(actionDetails, sizeof(actionDetails), "No book found with hash code %u.", bookHashCode);
-        recordAction(LastAction, ADD_ACTION, "Search Book", actionDetails);
     }
 }
 
@@ -427,27 +386,16 @@ void searchForUserByHash(HashTable* ht) {
 
     //Get users last name for the search
     printf("Enter the user's last name to search for: \n");
-    fgets(lastName, sizeof(lastName), stdin);
-    lastName[strcspn(lastName, "\n")] = '\0';
+    fgets(lastName, sizeof(lastName), stdin);  
+    lastName[strcspn(lastName, "\n")] = '\0';   
     userHashCode = generateUserHash(lastName);
     User* user = searchUserByHash(ht, userHashCode);
 
     if (user) {
         printf("User found: %s %s\n", user->firstName, user->lastName);
-    
-        // Record the action when the user is found
-        char actionDetails[256];
-        snprintf(actionDetails, sizeof(actionDetails), "User %s %s found with ID %d.", user->firstName, user->lastName, user->userId);
-        recordAction(LastAction, ADD_ACTION, "Search User", actionDetails);
     }
-
     else {
         printf("User not found.\n");
-
-        // Record the action when the user is not found
-        char actionDetails[256];
-        snprintf(actionDetails, sizeof(actionDetails), "User with last name '%s' not found.", lastName);
-        recordAction(LastAction, ADD_ACTION, "Search User", actionDetails);
     }
 }
 
@@ -466,7 +414,7 @@ int generateBookHash(const char* title) {
         title++;
     }
 
-    return hash % TABLE_SIZE;
+    return hash % TABLE_SIZE; 
 }
 
 

@@ -1,7 +1,9 @@
 USER,309,Randon,Guy
 USER,392,Luisa,Diaz
 USER,420,Tatiana,Cruz
+USER,503,test7,test7
 USER,507,Rodrigo,Gomes
+USER,554,Test82,test82
 USER,625,Nick,Reilly
 USER,696,Rodrigo,Pichara
 BOOK,349,C Fundamentals,Me,0,-1

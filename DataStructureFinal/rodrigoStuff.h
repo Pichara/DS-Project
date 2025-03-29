@@ -39,7 +39,7 @@ void removeBook(HashTable* ht);
 void updateBook(HashTable* ht);
 void removeUser(HashTable* ht);
 void updateUser(HashTable* ht);
-void processBookMenu(HashTable* ht);
+void processBookMenu(HashTable* ht, SnapshotStack* UndoStack);
 void returnBook(HashTable* ht);
 void borrowBook(HashTable* ht);
 

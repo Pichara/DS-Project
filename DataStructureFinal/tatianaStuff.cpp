@@ -1,281 +1,287 @@
-//Undo = Stack part
-
 #include "tatianaStuff.h"
 #include "nickStuff.h"
+#include "rodrigoStuff.h" //Using syncDatabaseToFile
 
-Pile* LastAction = NULL;  
+//Stack
 
-// FUNCTION: initPile
-// DESCRIPTION: Initializes the pile to be empty
-// PARAMETERS: none
-// RETURNS: Pointer to a new Pile
-Pile* initPile() {
-    Pile* newPile = (Pile*)malloc(sizeof(Pile));
-    if (newPile == NULL) {
-        printf("Memory allocation error.\n");
+
+// FUNCTION   : initSnapshotStack
+// DESCRIPTION: Initializes a new SnapshotStack
+// PARAMETERS : none
+// RETURNS    : Pointer to the new SnapshotStack
+SnapshotStack* initSnapshotStack(void) {
+    SnapshotStack* stack = (SnapshotStack*)malloc(sizeof(SnapshotStack));
+    if (!stack) {
+        printf("Memory allocation failed!\n");
         return NULL;
     }
-
-    newPile->top = NULL;
-    return newPile;
+    stack->top = NULL;
+    return stack;
 }
 
-// FUNCTION: isEmpty
-// DESCRIPTION: Checks if the pile is empty
-// PARAMETERS: stack - a pointer to the stack to check
-// RETURNS: 1 if the pile is empty, 0 if not
-int isEmpty(Pile* stack) {
-    return stack == NULL || stack->top == NULL;
+// FUNCTION   : freeSnapshotStack
+// DESCRIPTION: Frees all memory associated with a SnapshotStack
+// PARAMETERS : Pointer to the SnapshotStack pointer
+// RETURNS    : none
+void freeSnapshotStack(SnapshotStack** stackRef) {
+    if (!stackRef || !(*stackRef)) return;
+    SnapshotStack* stack = *stackRef;
+
+    SnapshotNode* current = stack->top;
+	//Free all nodes
+    while (current) {
+        SnapshotNode* temp = current;
+        current = current->next;
+
+        if (temp->snapshot) {
+            freeHashTable(temp->snapshot); 
+            free(temp->snapshot);
+        }
+        free(temp);
+    }
+
+    free(stack);
+    *stackRef = NULL;
 }
 
-// FUNCTION: push
-// DESCRIPTION: Pushes an action onto the pile
-// PARAMETERS: stack - a pointer to the pile
-//             action - the action to be pushed onto the pile
-// RETURNS: none
-void push(Pile* stack, Action action) {
-    if (stack == NULL) {
-        printf("Error: stack is NULL. Cannot push action.\n");
+// FUNCTION   : pushSnapshot
+// DESCRIPTION: Stores a snapshot of the HashTable in the stack
+// PARAMETERS : Pointer to the HashTable, Pointer to the SnapshotStack
+// RETURNS    : none
+void pushSnapshot(HashTable* ht, SnapshotStack* stack) {
+    if (!stack || !ht) return;
+
+    HashTable* copied = copyHashTable(ht);
+    if (!copied) {
+        printf("Error copying\n");
         return;
     }
 
-    PileNode* newPileNode = (PileNode*)malloc(sizeof(PileNode));
-    if (newPileNode == NULL) {
-        printf("Memory allocation error.\n");
+    SnapshotNode* node = (SnapshotNode*)malloc(sizeof(SnapshotNode));
+    if (!node) {
+        printf("Memory allocation failed!\n");
         return;
     }
-
-    newPileNode->action = action;
-    newPileNode->next = stack->top;
-    stack->top = newPileNode;
+    node->snapshot = copied;
+    node->next = stack->top;
+    stack->top = node;
 }
 
-// FUNCTION: pop
-// DESCRIPTION: Pops an action from the pile
-// PARAMETERS: stack - a pointer to the pile
-// RETURNS: the action that was popped from the pile
-Action pop(Pile* stack) {
-    if (isEmpty(stack)) {
-        printf("Pile is empty.\n");
-        Action emptyAction = { UNKNOWN_ACTION, "", "" };  //return a default empty action if the pile is empty
-        return emptyAction;
+// FUNCTION   : popSnapshot
+// DESCRIPTION: Restores the HashTable to the state it was in when the last snapshot was taken
+// PARAMETERS : Pointer to the HashTable, Pointer to the SnapshotStack
+// RETURNS    : 1 if successful, 0 if there are no snapshots to undo
+int popSnapshot(HashTable* destinationHT, SnapshotStack* stack) {
+    if (!stack) {
+        return 0;
+    }
+    if (!stack->top) {
+        printf("No actions to undo!\n");
+        return 0;
     }
 
-    PileNode* tempNode = stack->top;
-    Action action = tempNode->action;
-    stack->top = stack->top->next;
-    free(tempNode);
+    SnapshotNode* topNode = stack->top;
+    stack->top = topNode->next;
 
-    return action;
+
+    overwriteHashTable(destinationHT, topNode->snapshot);
+
+    freeHashTable(topNode->snapshot);
+    free(topNode->snapshot);
+    free(topNode);
+
+    logAction("POP", "SnapshotSaved!");
+
+    return 1;
 }
 
 
-// FUNCTION: undo_last_action
-// DESCRIPTION: Undoes the last action by popping from the pile
-// PARAMETERS: actionHistory - a pointer to the pile holding the action history
-// RETURNS: none
-void undo_last_action(Pile* actionHistory) {
-    if (actionHistory == NULL || isEmpty(actionHistory)) {
-        printf("No actions to undo.\n");
-        return;
+// FUNCTION   : copyHashTable
+// DESCRIPTION: Creates a deep copy of a HashTable
+// PARAMETERS : Pointer to the original HashTable
+// RETURNS    : Pointer to the new HashTable
+HashTable* copyHashTable(HashTable* original) {
+    if (!original) return NULL;
+
+    HashTable* newHT = (HashTable*)malloc(sizeof(HashTable));
+    if (!newHT) {
+        printf("Memory allocation failed!.\n");
+        return NULL;
+    }
+    initHashTable(newHT);
+	//Copy users
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        User* cur = original->users[i];
+        User** tailPtr = &newHT->users[i];
+        while (cur) {
+            User* newUser = (User*)malloc(sizeof(User));
+            if (!newUser) {
+                printf("Memory allocation failed!.\n");
+                return newHT;
+            }
+            strcpy_s(newUser->firstName, cur->firstName);
+            strcpy_s(newUser->lastName, cur->lastName);
+            newUser->userId = cur->userId;
+            newUser->next = NULL;
+
+            *tailPtr = newUser;
+            tailPtr = &newUser->next;
+
+            cur = cur->next;
+        }
     }
 
-    Action lastAction = pop(actionHistory);
+	//Copy books
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        Book* cur = original->table[i];
+        Book** tailPtr = &newHT->table[i];
+        while (cur) {
+            Book* newBook = (Book*)malloc(sizeof(Book));
+            if (!newBook) {
+                printf("Memory allocation failed!\n");
+                return newHT;
+            }
+            newBook->hashCode = cur->hashCode;
+            strcpy_s(newBook->title, cur->title);
+            strcpy_s(newBook->author, cur->author);
 
-    char revertDescription[256];
-    sprintf_s(revertDescription, "Reverted action: %s", lastAction.description);
-    logAction;
+            if (cur->borrowedBy) {
+                int userId = cur->borrowedBy->userId;
+                newBook->borrowedBy = searchUserByHash(newHT, userId);
+            }
+            else {
+                newBook->borrowedBy = NULL;
+            }
 
-    if (lastAction.actionType == ADD_ACTION) {
-        printf("Reverted action: User '%s %s' (ID: %d) was added.\n", lastAction.firstName, lastAction.lastName, lastAction.userId);
+            newBook->queueFront = NULL; 
+            newBook->queueRear = NULL;
+            newBook->next = NULL;
+
+            // Inserir
+            *tailPtr = newBook;
+            tailPtr = &newBook->next;
+
+            cur = cur->next;
+        }
     }
-    else if (lastAction.actionType == REMOVE_ACTION) {
-        printf("Reverted action: User '%s %s' (ID: %d) was removed.\n", lastAction.firstName, lastAction.lastName, lastAction.userId);
+
+    return newHT;
+}
+
+// FUNCTION   : overwriteHashTable
+// DESCRIPTION: Overwrites the contents of a HashTable with the contents of another HashTable
+// PARAMETERS : Pointer to the destination HashTable, Pointer to the source HashTable
+// RETURNS    : none
+void overwriteHashTable(HashTable* destinationHT, HashTable* sourceHT) {
+    if (!destinationHT || !sourceHT) return;
+
+    freeHashTable(destinationHT);
+
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        destinationHT->users[i] = NULL;
+        destinationHT->table[i] = NULL;
     }
-    else if (lastAction.actionType == UPDATE_ACTION) {
-        printf("Reverted action: User '%s %s' (ID: %d) was updated.\n", lastAction.firstName, lastAction.lastName, lastAction.userId);
+
+	//Copy users
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        User* cur = sourceHT->users[i];
+        User** tailPtr = &destinationHT->users[i];
+        while (cur) {
+            User* newUser = (User*)malloc(sizeof(User));
+            if (!newUser) {
+                printf("Memory allocation failed!\n");
+                return;
+            }
+            strcpy_s(newUser->firstName, cur->firstName);
+            strcpy_s(newUser->lastName, cur->lastName);
+            newUser->userId = cur->userId;
+            newUser->next = NULL;
+
+            *tailPtr = newUser;
+            tailPtr = &newUser->next;
+
+            cur = cur->next;
+        }
+    }
+
+	//Copy books
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        Book* cur = sourceHT->table[i];
+        Book** tailPtr = &destinationHT->table[i];
+    
+        while (cur) {
+            Book* newBook = (Book*)malloc(sizeof(Book));
+            if (!newBook) {
+                printf("Memory allocation failed!\n");
+                return;
+            }
+            newBook->hashCode = cur->hashCode;
+            strcpy_s(newBook->title, cur->title);
+            strcpy_s(newBook->author, cur->author);
+
+            if (cur->borrowedBy) {
+                int userId = cur->borrowedBy->userId;
+                newBook->borrowedBy = searchUserByHash(destinationHT, userId);
+            }
+            else {
+                newBook->borrowedBy = NULL;
+            }
+            newBook->queueFront = NULL;
+            newBook->queueRear = NULL;
+            newBook->next = NULL;
+
+            *tailPtr = newBook;
+            tailPtr = &newBook->next;
+
+            cur = cur->next;
+        }
+    }
+}
+
+
+// FUNCTION   : undo_last_action
+// DESCRIPTION: Undoes the last action taken on the HashTable
+// PARAMETERS : Pointer to the HashTable, Pointer to the SnapshotStack
+// RETURNS    : none
+void undo_last_action(HashTable* ht, SnapshotStack* stack) {
+	//If popSnapshot returns 0, it means there are no snapshots to undo
+    if (!popSnapshot(ht, stack)) {
+		printf("No actions to undo!\n");
     }
     else {
-        printf("Unknown action. No revert logic implemented.\n");
-    }
-    
-    // Implementing...
-    Action revertAction;
-    revertAction.actionType = REVERT_ACTION;
-    revertAction.userId = lastAction.userId;
-    strcpy(revertAction.firstName, lastAction.firstName);
-    strcpy(revertAction.lastName, lastAction.lastName);
-    strcpy(revertAction.description, "Reverted action");
-    strcpy(revertAction.details, "This action was reverted.");
-
-    push(actionHistory, revertAction);
-
-}
-
-// FUNCTION: clearStack
-// DESCRIPTION: Clears all actions from the pile and frees memory
-// PARAMETERS: stack - a pointer to the pile to be cleared
-// RETURNS: none
-void clearStack(Pile** stack) {  
-    if (stack == NULL || *stack == NULL) return;
-    while (!isEmpty(*stack)) {
-        pop(*stack);
-    }
-    free(*stack);
-    *stack = NULL;
-}
-
-// FUNCTION   : recordAction
-// DESCRIPTION: Registers an action (like add, remove, or update) into the action stack.
-//              It stores information about the action in a structure and adds it to the stack.
-// PARAMETERS : 
-//     - LastAction: A pointer to the Pile where the action will be recorded.
-//     - actionType: The type of the action (e.g., ADD_ACTION, REMOVE_ACTION, etc.)
-//     - description: A short description of the action (e.g., "Add user", "Remove book").
-//     - details: A more detailed description of the action (e.g., "Added user John Doe" or "Removed book ABC").
-// RETURNS    : none
-//
-void recordAction(Pile* LastAction, ActionType actionType, const char* description, const char* details) {
-    if (LastAction == NULL) {
-        printf("Error: LastAction is NULL.\n");
-        return;
-    }
-
-    Action action;
-    action.actionType = actionType;
-
-    strcpy_s(action.description, sizeof(action.description), description);
-    strcpy_s(action.details, sizeof(action.details), details);
-
-    action.description[sizeof(action.description) - 1] = '\0';
-    action.details[sizeof(action.details) - 1] = '\0';
-
-    push(LastAction, action);
-
-    logAction(
-        (actionType == ADD_ACTION) ? "Add" :
-        (actionType == REMOVE_ACTION) ? "Remove" : "Update",
-        description,
-        details
-    );
- 
-}
-
-
-// FUNCTION   : showUndoOptions
-// DESCRIPTION: displays the undo menu, al
-// lowing users to view action history or undo the last action.
-// PARAMETERS : actionHistory - The stack containing the action history.
-// RETURNS    : none
-void showUndoOptions(Pile* actionHistory) {
-    int choice;
-
-    printf("\nSelect an option:\n");
-    printf("1. Action History\n");
-    printf("2. Undo last action\n");
-    printf("Enter your choice: ");
-
-    choice = GetValidIntegerInput();
-
-    switch (choice) {
-    case 1:
-        showActionHistory(actionHistory);
-        break;
-    case 2:
-        undo_last_action(actionHistory);
-        break;
-    default:
-        printf("Invalid choice. Please select 1 or 2.\n");
-        break;
+        printf("\nReverted the system to the last action\n");
+        syncDatabaseToFile(ht, "database.txt");
     }
 }
 
-// FUNCTION   : ActionHistory
-// DESCRIPTION: 
-// PARAMETERS : actionHistory 
-// RETURNS    : none
-void actionHistory(Pile* actionHistory) {
-    if (actionHistory == NULL || isEmpty(actionHistory)) {
-        printf("No actions in history.\n");
-        return;
-    }
 
-    PileNode* topAction = actionHistory->top;
-    if (topAction != NULL) {
-        printf("Last action: %s\n", topAction->action.description);
-    }
-}
-
-// FUNCTION   : showActionHistory
-// DESCRIPTION: Displays the full history of actions stored in the action stack in a clear format.
-// PARAMETERS : actionHistory - The stack containing the action history.
-// RETURNS    : none
-void showActionHistory(Pile* actionHistory) {
-    if (actionHistory == NULL || isEmpty(actionHistory)) {
-        printf("\nNo actions recorded in history.\n\n");
-        return;
-    }
-
-    printf("\nAction History:\n");
-
-    PileNode* current = actionHistory->top;
-
-    while (current != NULL) {
-        switch (current->action.actionType) {
-        case ADD_ACTION:
-            printf("Added: %s\n", current->action.description);
-            break;
-        case REMOVE_ACTION:
-            printf("Removed: %s\n", current->action.description);
-            break;
-        case UPDATE_ACTION:
-            printf("Updated: %s\n", current->action.description);
-            break;
-        case SEARCH_ACTION:
-            printf("Searched for: %s\n", current->action.description);
-            break;
-        case PROCESS_ACTION:
-            printf("Processed: %s\n", current->action.description);
-            break;
-        case DISPLAY_ACTION:
-            printf("Displayed: %s\n", current->action.description);
-            break;
-        default:
-            printf("Unknown action: %s\n", current->action.description);
-            break;
-        }
-
-        current = current->next;
-    }
-
-    printf("\n");
-}
+//Logging
 
 // FUNCTION   : logAction
-// DESCRIPTION: Saves an action to the history file without printing anything on screen
-// PARAMETERS : action - The string describing the action
+// DESCRIPTION: Logs an action taken on the HashTable to a file
+// PARAMETERS : The type of action taken, Details about the action
 // RETURNS    : none
-void logAction(const char* actionType, const char* description, const char* details) {
-    time_t t = time(NULL);
-    struct tm tm = *localtime(&t);
-
-    FILE* logFile = fopen("history.txt", "a");
-    if (logFile == NULL) {
-        printf("Error.\n");
+void logAction(const char* actionType, const char* details) {
+    FILE* file = NULL;
+    errno_t err = fopen_s(&file, "log.txt", "a");
+    if (err != 0 || !file) {
+        printf("Error opening log.txt\n");
         return;
     }
 
-    char timeString[100];
+    time_t t = time(NULL);
+    struct tm timeInfo;
+    localtime_s(&timeInfo, &t);
+
+    char timeString[64];
     snprintf(timeString, sizeof(timeString), "%04d-%02d-%02d %02d:%02d:%02d",
-        tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+        timeInfo.tm_year + 1900,
+        timeInfo.tm_mon + 1,
+        timeInfo.tm_mday,
+        timeInfo.tm_hour,
+        timeInfo.tm_min,
+        timeInfo.tm_sec);
 
-    char logMessage[512];
-    snprintf(logMessage, sizeof(logMessage), "[%s] %s: %s - %s\n", timeString, actionType, description, details);
-
-    fprintf(logFile, "%s", logMessage);
-
-    printf("%s", logMessage);
-
-    fclose(logFile);
-
-} // Tatiana implementing...
+    fprintf(file, "[%s] %s: %s\n", timeString, actionType, details);
+    fclose(file);
+}

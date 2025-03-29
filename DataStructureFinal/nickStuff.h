@@ -42,7 +42,6 @@ typedef enum {
 #define MAX_NAME_LEN 50
 #define TABLE_SIZE 1000 
 
-
 typedef struct User {
     char firstName[50];
     char lastName[50];
@@ -70,6 +69,15 @@ typedef struct HashTable {
     User* users[TABLE_SIZE]; 
 } HashTable;
 
+typedef struct SnapshotNode {
+    struct HashTable* snapshot;
+    struct SnapshotNode* next;
+} SnapshotNode;
+
+typedef struct SnapshotStack {
+    SnapshotNode* top;
+} SnapshotStack;
+
 void mainMenu(void);
 void displayMainMenu(void);
 int GetValidIntegerInput(void);
@@ -84,5 +92,5 @@ int generateUserHash(const char* lastName);
 void initHashTable(HashTable* ht);
 void freeHashTable(HashTable* ht);
 void searchMenu(HashTable* ht);
-void manageUserMenu(HashTable* ht);
-void manageBookMenu(HashTable* ht);
+void manageUserMenu(HashTable* ht, SnapshotStack* undoStack);
+void manageBookMenu(HashTable* ht, SnapshotStack* undoStack);
