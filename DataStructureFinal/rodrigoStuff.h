@@ -11,8 +11,14 @@
 typedef enum {
     BORROW_BOOK = 1,
 	RETURN_BOOK,
+    BACK_PROCESS
 } checkOutOptions;
 
+typedef enum {
+    DISP_BOOK = 1,
+    DISP_USER,
+    BACK_DISP
+} displayOptions;
 
 //BST for USERS
 typedef struct UserBSTNode {

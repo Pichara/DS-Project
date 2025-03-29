@@ -91,6 +91,7 @@ void manageUserMenu(HashTable* ht, SnapshotStack* undoStack) {
     printf("1. Add a new user\n");
     printf("2. Remove exisitng user\n");
 	printf("3. Update existing user\n");
+    printf("4. Back\n");
     printf("Enter your choice: ");
     choice = (manageUserOptions)GetValidIntegerInput();
     switch (choice) {
@@ -106,6 +107,8 @@ void manageUserMenu(HashTable* ht, SnapshotStack* undoStack) {
         pushSnapshot(ht, undoStack);
 		updateUser(ht); //Pichara implementing...
 		break;
+    case BACK_USER:
+        break;
     default:
         printf("Please only enter the valid integer options (1,2,3)\n");
     }
@@ -124,6 +127,7 @@ void manageBookMenu(HashTable* ht, SnapshotStack* undoStack) {
     printf("1. Add a books\n");
     printf("2. Remove existing book\n");
 	printf("3. Update existing book\n");
+    printf("4. Back\n");
     printf("Enter your choice: ");
     choice = (manageBookOptions)GetValidIntegerInput();
     switch (choice) {
@@ -141,10 +145,43 @@ void manageBookMenu(HashTable* ht, SnapshotStack* undoStack) {
 		pushSnapshot(ht, undoStack);
 		updateBook(ht); //Pichara implementing...
         break;
+    case BACK_BOOK:
+        break;
     default:
         printf("Please only enter the valid integer options (1,2,3)\n");
     }
 }
+
+//
+// FUNCTION   : searchMenu    
+// DESCRIPTION: Secondary menu to display chopice of searching books by id or users
+//                    
+// PARAMETERS : Pointer to the hash table    
+// RETURNS    : none   
+//
+void searchMenu(HashTable* ht) {
+    searchOptions choice;
+    printf("Please choose an option:\n");
+    printf("1. Search for books\n");
+    printf("2. Search for users\n");
+    printf("3. Back\n");
+    printf("Enter your choice: ");
+    choice = (searchOptions)GetValidIntegerInput();
+    switch (choice) {
+    case SEARCH_BOOK:
+        searchforBookByHash(ht);
+        break;
+    case SEARCH_USER:
+        searchForUserByHash(ht);
+        break;
+    case BACK_SEARCH:
+        break;
+    default:
+        printf("Please only enter the valid integer options (1,2)\n");
+    }
+}
+
+
 //
 // FUNCTION   : GetValidIntegerInput     
 // DESCRIPTION: Makes sure that the input read from keyboard is a single int only between 1-6 inclusive  
@@ -467,32 +504,5 @@ void freeHashTable(HashTable* ht) {
             free(temp);
         }
         ht->table[i] = NULL;
-    }
-}
-
-
-//
-// FUNCTION   : searchMenu    
-// DESCRIPTION: Secondary menu to display chopice of searching books by id or users
-//                    
-// PARAMETERS : Pointer to the hash table    
-// RETURNS    : none   
-//
-void searchMenu(HashTable* ht) {
-    searchOptions choice;
-    printf("Please choose an option:\n");
-    printf("1. Search for books\n");
-    printf("2. Search for users\n");
-    printf("Enter your choice: ");
-    choice = (searchOptions)GetValidIntegerInput();
-    switch (choice) {
-    case SEARCH_BOOK:
-        searchforBookByHash(ht);
-        break;
-    case SEARCH_USER:
-        searchForUserByHash(ht);
-        break;
-    default:
-        printf("Please only enter the valid integer options (1,2)\n");
     }
 }

@@ -18,24 +18,22 @@ typedef enum {
 typedef enum {
     ADD_USER = 1,
     REMOVE_USER,
-    UPDATE_USER
+    UPDATE_USER,
+    BACK_USER
 } manageUserOptions;
 
 typedef enum {
     ADD_BOOK = 1,
     REMOVE_BOOK,
-    UPDATE_BOOK
+    UPDATE_BOOK,
+    BACK_BOOK
 } manageBookOptions;
 
 typedef enum {
     SEARCH_BOOK = 1,
-    SEARCH_USER
+    SEARCH_USER,
+    BACK_SEARCH
 } searchOptions;
-
-typedef enum {
-    DISP_BOOK = 1,
-    DISP_USER
-} displayOptions;
 
 #define MAX_TITLE_LEN 100
 #define MAX_AUTHOR_LEN 50

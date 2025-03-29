@@ -334,6 +334,7 @@ void processBookMenu(HashTable* ht, SnapshotStack* undoStack) {
     printf("Please choose an option:\n");
     printf("1. Borrow a book\n");
     printf("2. Return a book\n");
+    printf("3. Back\n");
     printf("Enter your choice: ");
     choice = (checkOutOptions)GetValidIntegerInput();
     switch (choice) {
@@ -344,6 +345,8 @@ void processBookMenu(HashTable* ht, SnapshotStack* undoStack) {
     case RETURN_BOOK:
 		pushSnapshot(ht, undoStack);
         returnBook(ht);
+        break;
+    case BACK_PROCESS:
         break;
     default:
         printf("Invalid choice!\n");
@@ -418,6 +421,7 @@ void databaseMenu(HashTable* ht) {
     printf("Please choose an option:\n");
     printf("1. View all books\n");
     printf("2. View all users\n");
+    printf("3. Back\n");
     printf("Enter your choice: ");
     choice = (displayOptions)GetValidIntegerInput();
     switch (choice) {
@@ -426,6 +430,8 @@ void databaseMenu(HashTable* ht) {
         break;
     case DISP_USER:
         printUsers(ht);
+        break;
+    case BACK_DISP:
         break;
     default:
         printf("Please only enter the valid integer options (1,2)\n");
