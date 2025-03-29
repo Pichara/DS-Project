@@ -239,10 +239,10 @@ int GetValidIntegerInput(void) {
 // RETURNS    : none    
 //
 void addUser(HashTable* ht) {
-    
     //Initlaize variables
     char firstName[MAX_NAME_LEN], lastName[MAX_NAME_LEN];
     int userId;
+    char log_message[MAX_LOG_LEN];
 
     //Prompt the user for their first name
     printf("Enter first name: ");
@@ -281,7 +281,11 @@ void addUser(HashTable* ht) {
     //Confirm the user was added
     printf("User %s %s with ID %d has been added.\n", firstName, lastName, userId);
 
-	//Add the data to a file for storage | Pichara implementing...
+    //Logging
+    snprintf(log_message, sizeof(log_message), "User %s added", lastName);
+    logAction("Add User", log_message);
+
+	//Add the data to a file for storage 
     syncDatabaseToFile(ht, "database.txt");
 }
 
@@ -297,7 +301,8 @@ void addUser(HashTable* ht) {
 //
 void addBook(HashTable* ht) {
     //Initalize variables.
-    char title[MAX_TITLE_LEN], author[MAX_AUTHOR_LEN];
+    char title[MAX_TITLE_LEN], author[MAX_AUTHOR_LEN]; 
+    char log_message[MAX_LOG_LEN];
 
     //Prompt the user for the book title
     printf("Enter book title: ");
@@ -333,6 +338,11 @@ void addBook(HashTable* ht) {
     ht->table[index] = newBook;
 
     printf("Book '%s' by '%s' has been added at index %d.\n", title, author, index);
+
+
+    //Logging
+    snprintf(log_message, sizeof(log_message), "Book %s added", title);
+    logAction("Add Book", log_message);
 
 	//Add the data to a file for storage | Pichara implementing..
     syncDatabaseToFile(ht, "database.txt");

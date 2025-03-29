@@ -1,2 +1,6 @@
 [2025-03-29 14:52:51] POP: SnapshotSaved!
 [2025-03-29 14:53:00] POP: SnapshotSaved!
+[2025-03-29 16:13:43] Add User: User NewUser added
+[2025-03-29 16:13:49] Add Book: Book Test added
+[2025-03-29 16:14:23] Remove Book: Book test7 removed
+[2025-03-29 16:14:31] Remove User: User test7 removed

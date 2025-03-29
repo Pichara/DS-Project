@@ -12,6 +12,8 @@
 //
 void removeBook(HashTable* ht) {
     char title[MAX_TITLE_LEN];
+    char log_message[MAX_LOG_LEN];
+
     printf("Enter the title of the book to remove: ");
     fgets(title, sizeof(title), stdin);
     title[strcspn(title, "\n")] = '\0';
@@ -40,6 +42,10 @@ void removeBook(HashTable* ht) {
     }
     printf("Book '%s' not found\n", title);
 
+    //Logging
+    snprintf(log_message, sizeof(log_message), "Book %s removed", title);
+    logAction("Remove Book", log_message);
+
 	//Remove the book from the file | Pichara implementing..
     syncDatabaseToFile(ht, "database.txt");
 }
@@ -53,6 +59,7 @@ void removeBook(HashTable* ht) {
 //
 void updateBook(HashTable* ht) {
     char oldTitle[MAX_TITLE_LEN];
+    char log_message[MAX_LOG_LEN];
 
     printf("Enter the current title of the book to update: ");
     fgets(oldTitle, sizeof(oldTitle), stdin);
@@ -108,7 +115,12 @@ void updateBook(HashTable* ht) {
                 strcpy_s(current->author, newAuthor);
             }
             printf("Book updated successfully\n");
-            //Update the book in the file | Pichara implementing...
+
+            //Logging
+            snprintf(log_message, sizeof(log_message), "Book %s, changed to %s with the author %s", oldTitle, newTitle, newAuthor);
+            logAction("Update Book", log_message);
+
+            //Update the book in the file.
             syncDatabaseToFile(ht, "database.txt");
             return;
         }
@@ -126,6 +138,7 @@ void updateBook(HashTable* ht) {
 //
 void removeUser(HashTable* ht) {
     char lastName[MAX_NAME_LEN];
+    char log_message[MAX_LOG_LEN];
     
     printf("Enter the last name of the user to remove: ");
     fgets(lastName, sizeof(lastName), stdin);
@@ -148,7 +161,12 @@ void removeUser(HashTable* ht) {
             }
             free(current);
             printf("User '%s' removed successfully\n", lastName);
-            //Remove the user from the file | Pichara implementing...
+            
+            //Logging
+            snprintf(log_message, sizeof(log_message), "User %s removed", lastName);
+            logAction("Remove User", log_message);
+
+            //Remove the user from the file
             syncDatabaseToFile(ht, "database.txt");
             return;
         }
@@ -166,6 +184,7 @@ void removeUser(HashTable* ht) {
 //
 void updateUser(HashTable* ht) {
     char oldLastName[MAX_NAME_LEN];
+    char log_message[MAX_LOG_LEN];
 
     printf("Enter the last name of the user to update: ");
     fgets(oldLastName, sizeof(oldLastName), stdin);
@@ -217,7 +236,12 @@ void updateUser(HashTable* ht) {
                 ht->users[newIndex] = temp;
             }
             printf("User updated successfully\n");
-            //Update the book in the file | Pichara implementing...
+
+            //Logging
+            snprintf(log_message, sizeof(log_message), "User %s, changed to %s %s", oldLastName, newFirstName, newLastName);
+            logAction("Update User", log_message);
+
+            //Update the book in the file
             syncDatabaseToFile(ht, "database.txt");
             return;
         }
@@ -237,12 +261,14 @@ void updateUser(HashTable* ht) {
 // RETURNS    : none
 //
 void borrowBook(HashTable* ht) {
+    char log_message[MAX_LOG_LEN];
     char lastName[MAX_NAME_LEN];
+    char bookTitle[MAX_TITLE_LEN];
+
     printf("Enter the last name of the user who wants to borrow: ");
     fgets(lastName, sizeof(lastName), stdin);
     lastName[strcspn(lastName, "\n")] = '\0';
 
-    char bookTitle[MAX_TITLE_LEN];
     printf("Enter the title of the book to borrow: ");
     fgets(bookTitle, sizeof(bookTitle), stdin);
     bookTitle[strcspn(bookTitle, "\n")] = '\0';
@@ -266,10 +292,18 @@ void borrowBook(HashTable* ht) {
     if (book->borrowedBy) {
         printf("Book is currently borrowed; user '%s %s' added to the waiting queue\n", user->firstName, user->lastName);
         enqueueUser(book, user);
+
+        //Logging
+        snprintf(log_message, sizeof(log_message), "Book is currently borrowed; user '%s %s' added to the waiting queue", user->firstName, user->lastName);
+        logAction("Borrow Book", log_message);
     }
     else {
         book->borrowedBy = user;
         printf("Book '%s' is now borrowed by '%s %s'\n", book->title, user->firstName, user->lastName);
+
+        //Logging
+        snprintf(log_message, sizeof(log_message), "Book '%s' is now borrowed by '%s %s'", book->title, user->firstName, user->lastName);
+        logAction("Borrow Book", log_message);
     }
 
     //Update the book in the file | Pichara implementing...
@@ -284,6 +318,7 @@ void borrowBook(HashTable* ht) {
 // RETURNS    : none
 //
 void returnBook(HashTable* ht) {
+    char log_message[MAX_LOG_LEN];
     char bookTitle[MAX_TITLE_LEN];
 
     printf("Enter the title of the book to return: ");
@@ -304,6 +339,10 @@ void returnBook(HashTable* ht) {
             book->borrowedBy->firstName,
             book->borrowedBy->lastName);
 
+        //Logging
+        snprintf(log_message, sizeof(log_message), "Book %s, returned by %s %s", book->title, book->borrowedBy->firstName, book->borrowedBy->lastName);
+        logAction("Book Return", log_message);
+
         book->borrowedBy = NULL;
 
         //Dequeue the next waiting user, if any
@@ -311,7 +350,11 @@ void returnBook(HashTable* ht) {
         if (nextUser) {
             //Immediately assign the book to the next user in queue
             book->borrowedBy = nextUser;
-            printf("Book '%s' is now automatically borrowed by '%s %s'\n", book->title, nextUser->firstName, nextUser->lastName);
+            printf("Book '%s' is now automatically borrowed by '%s %s'", book->title, nextUser->firstName, nextUser->lastName);
+
+            //Logging
+            snprintf(log_message, sizeof(log_message), "Book %s, returned by %s %s and automatically borrowed by '%s %s", book->title, book->borrowedBy->firstName, book->borrowedBy->lastName, nextUser->firstName, nextUser->lastName);
+            logAction("Book Return", log_message);
         }
     }
     else {

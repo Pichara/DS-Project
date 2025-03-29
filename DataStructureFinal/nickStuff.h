@@ -38,7 +38,8 @@ typedef enum {
 #define MAX_TITLE_LEN 100
 #define MAX_AUTHOR_LEN 50
 #define MAX_NAME_LEN 50
-#define TABLE_SIZE 1000 
+#define TABLE_SIZE 1000
+#define MAX_LOG_LEN 256
 
 typedef struct User {
     char firstName[50];

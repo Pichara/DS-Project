@@ -250,6 +250,7 @@ void undo_last_action(HashTable* ht, SnapshotStack* stack) {
     }
     else {
         printf("\nReverted the system to the last action\n");
+        //Implementation of printing the last log
         syncDatabaseToFile(ht, "database.txt");
     }
 }
