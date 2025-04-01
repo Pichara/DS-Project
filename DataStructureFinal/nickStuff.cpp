@@ -273,6 +273,7 @@ void addUser(HashTable* ht) {
     newUser->userId = userId;
 
     //Check to make sure that this user is not a duplciate
+    int index = userId % TABLE_SIZE; 
     User* current = ht->users[userId];
     while (current != NULL) {
 
@@ -286,7 +287,10 @@ void addUser(HashTable* ht) {
         current = current->next;
     }
 
-    //Insert the new user into the hash table's linked list at the calculated index
+    // Insert the new user at the beginning of the linked list at the appropriate index
+    newUser->next = ht->users[userId];
+
+    // Insert the new user into the hash table's linked list at the calculated index
     ht->users[userId] = newUser;
 
     //Confirm the user was added
@@ -344,10 +348,24 @@ void addBook(HashTable* ht) {
 	//Initialize the queue pointers
 	newBook->queueFront = NULL;
 	newBook->queueRear = NULL;
+
+    //Check to make sure that this user is not a duplciate
+    Book* current = ht->table[index];
+    while (current != NULL) {
+        // If a book with the same title and hashCode exists, it's a duplicate. Throw error and delete.
+        if (strcmp(current->title, title) == 0 && current->hashCode == newBook->hashCode) {
+            printf("Error: Duplicate book found! The book '%s' already exists.\n", title);
+            free(newBook);
+            return;
+        }
+        current = current->next;
+    }
     
+	//Add the entry into the hash table
     newBook->next = ht->table[index];
     ht->table[index] = newBook;
 
+    //Confirm the process was successful.
     printf("Book '%s' by '%s' has been added at index %d.\n", title, author, index);
 
 

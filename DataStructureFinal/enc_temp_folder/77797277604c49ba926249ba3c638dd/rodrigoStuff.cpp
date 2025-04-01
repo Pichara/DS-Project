@@ -152,7 +152,7 @@ void removeUser(HashTable* ht) {
     int userCount = 0;
     int selectedUser = -1;
 
-    //Find all users with the same last name and hash code
+    // Find all users with the same last name and hash code
     while (current != NULL) {
         if (current->userId == userHashCode && strcmp(current->lastName, lastName) == 0) {
             userCount++;
@@ -166,7 +166,7 @@ void removeUser(HashTable* ht) {
         return;
     }
 
-    //If there's only one user, delete them without confirmation
+    // If there's only one user, delete them without confirmation
     if (userCount == 1) {
         current = ht->users[index];
         prev = NULL;
@@ -202,7 +202,7 @@ void removeUser(HashTable* ht) {
         }
     }
     else {
-        //If there are multiple users, ask the admin which user to delete
+        // If there are multiple users, ask the admin which user to delete
         printf("Enter the number of the user you want to remove (1-%d): ", userCount);
         scanf_s("%d", &selectedUser);
         getchar();
@@ -212,7 +212,7 @@ void removeUser(HashTable* ht) {
             return;
         }
 
-        //Reset current and prev to traverse the list again
+        // Reset current and prev to traverse the list again
         current = ht->users[index];
         prev = NULL;
         int currentUserIndex = 0;
@@ -221,10 +221,9 @@ void removeUser(HashTable* ht) {
             if (current->userId == userHashCode && strcmp(current->lastName, lastName) == 0) {
                 currentUserIndex++;
 
-                //If this is the selected user, delete them
+                // If this is the selected user, delete them
                 if (currentUserIndex == selectedUser) {
-
-                    //Copy their info first so we can get a formatted print on screen and in the log
+                    // Copy their info first so we can get a formatted print on screen and in the log
                     char savedFirstName[MAX_NAME_LEN];
                     char savedLastName[MAX_NAME_LEN];
                     strcpy_s(savedFirstName, sizeof(savedFirstName), current->firstName);
@@ -240,11 +239,11 @@ void removeUser(HashTable* ht) {
                     free(current);
                     printf("User '%s %s' removed successfully.\n", savedFirstName, savedLastName);
 
-                    //Logging
+                    // Logging
                     snprintf(log_message, sizeof(log_message), "User %s %s removed", savedFirstName, savedLastName);
                     logAction("Remove User", log_message);
 
-                    //Remove the user from the file
+                    // Remove the user from the file
                     syncDatabaseToFile(ht, "database.txt");
                     return;
                 }
