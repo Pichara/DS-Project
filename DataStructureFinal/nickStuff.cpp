@@ -272,8 +272,19 @@ void addUser(HashTable* ht) {
     //Assign the generated hash as the userId
     newUser->userId = userId;
 
-    //Insert the user at the beginning of the linked list at the appropriate index
-    newUser->next = ht->users[userId];
+    //Check to make sure that this user is not a duplciate
+    User* current = ht->users[userId];
+    while (current != NULL) {
+
+        //If a user with the same first name, last name, and userId exists, it's a duplicate. Throw error and do not add.
+        if (strcmp(current->firstName, firstName) == 0 && strcmp(current->lastName, lastName) == 0 && current->userId == userId) {
+
+            printf("Error: Duplicate user found! User %s %s with ID %d already exists.\n", firstName, lastName, userId);
+            free(newUser);
+            return;
+        }
+        current = current->next;
+    }
 
     //Insert the new user into the hash table's linked list at the calculated index
     ht->users[userId] = newUser;
@@ -445,24 +456,27 @@ void searchForUserByHash(HashTable* ht) {
         printf("User not found.\n");
     }
 }
-
 //
 // FUNCTION   : generateBookHash     
-// DESCRIPTION: Multiplies the char ASCII value by 31 and adds it to total
-//              Then moduluses the result by the size of the table to ensure its in range
-//                    
-// PARAMETERS : Pointer to the title and the tablesize   
+// DESCRIPTION: Sums the ASCII value of each character and then takes the modulus 
+//              with the table size to ensure the hash value is within range.
+// PARAMETERS : Pointer to the title and the table size   
 // RETURNS    : an integer value which is the hash key or index
 //
 int generateBookHash(const char* title) {
     unsigned int hash = 0;
+
+    // Process each character in the title
     while (*title) {
+        // Sum the ASCII value of the current character
         hash += *title;
         title++;
     }
 
-    return hash % TABLE_SIZE; 
+    // Return the hash value constrained to the table size
+    return hash % TABLE_SIZE;
 }
+
 
 
 //
