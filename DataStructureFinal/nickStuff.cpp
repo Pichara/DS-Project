@@ -1,6 +1,4 @@
-#include "nickStuff.h"
-#include "rodrigoStuff.h"
-#include "tatianaStuff.h"
+#include "mainHeader.h"
 
 //
 // FUNCTION   : mainMenu      

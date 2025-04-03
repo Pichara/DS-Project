@@ -1,8 +1,4 @@
-#include "tatianaStuff.h"
-#include "nickStuff.h"
-#include "rodrigoStuff.h" //Using syncDatabaseToFile
-
-//Stack
+#include "mainHeader.h"
 
 
 // FUNCTION   : initSnapshotStack

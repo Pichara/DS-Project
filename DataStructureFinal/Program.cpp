@@ -1,5 +1,4 @@
-#include "nickStuff.h"
-#include "rodrigoStuff.h"
+#include "mainHeader.h"
 
 int main(void) {
     mainMenu();

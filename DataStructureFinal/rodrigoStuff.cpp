@@ -1,8 +1,5 @@
-#include "rodrigoStuff.h"
+#include "mainHeader.h"
 
-//Including nickstuff to use the user and book structures
-#include "nickStuff.h"
-#include "tatianaStuff.h"
 
 //
 // FUNCTION   : removeBook
@@ -205,7 +202,7 @@ void removeUser(HashTable* ht) {
         //If there are multiple users, ask the admin which user to delete
         printf("Enter the number of the user you want to remove (1-%d): ", userCount);
         scanf_s("%d", &selectedUser);
-        getchar();
+        (void)getchar();
 
         if (selectedUser < 1 || selectedUser > userCount) {
             printf("Invalid selection!\n");

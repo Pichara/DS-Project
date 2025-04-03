@@ -133,9 +133,7 @@
     <ClCompile Include="tatianaStuff.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="nickStuff.h" />
-    <ClInclude Include="rodrigoStuff.h" />
-    <ClInclude Include="tatianaStuff.h" />
+    <ClInclude Include="mainHeader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
