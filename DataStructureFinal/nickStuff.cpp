@@ -136,12 +136,12 @@ void manageBookMenu(HashTable* ht, SnapshotStack* undoStack) {
     case REMOVE_BOOK:
 		printf("Remove book\n");
 		pushSnapshot(ht, undoStack);
-		removeBook(ht); //Pichara implementing...
+		removeBook(ht);
         break;
 	case UPDATE_BOOK:
 		printf("Update book\n");
 		pushSnapshot(ht, undoStack);
-		updateBook(ht); //Pichara implementing...
+		updateBook(ht);
         break;
     case BACK_BOOK:
         break;
@@ -188,7 +188,6 @@ void searchMenu(HashTable* ht) {
 // RETURNS    : value, which is the number isolated and meets the range of 1-6 inclusive.     
 //
 int GetValidIntegerInput(void) {
-
     //Declare the local variables
     int value;
     char buffer[100];
@@ -371,7 +370,7 @@ void addBook(HashTable* ht) {
     snprintf(log_message, sizeof(log_message), "Book %s added", title);
     logAction("Add Book", log_message);
 
-	//Add the data to a file for storage | Pichara implementing..
+	//Add the data to a file for storage
     syncDatabaseToFile(ht, "database.txt");
 }
 

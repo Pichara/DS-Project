@@ -441,7 +441,7 @@ void returnBook(HashTable* ht) {
         printf("That book was not borrowed\n");
     }
 
-	//Update the file | Pichara implementing...
+	//Update the file
     syncDatabaseToFile(ht, "database.txt");
 }
 
