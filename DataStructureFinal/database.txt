@@ -10,6 +10,6 @@ BOOK,349,C Fundamentals,Me,0,-1
 BOOK,416,Test,Test2,0,-1
 BOOK,432,A arte da guerra,Sun Tzu,0,-1
 BOOK,463,The Hunger Games,Me,0,-1
-BOOK,463,The Hunger Games,Me,0,-1
 BOOK,463,The Hunger Games,Suzanne Collins,0,-1
+BOOK,463,The Hunger Games,Me,0,-1
 BOOK,463,The Hunger Games,Me,0,-1

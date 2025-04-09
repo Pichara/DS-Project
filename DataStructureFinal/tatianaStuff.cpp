@@ -294,25 +294,42 @@ void logAction(const char* actionType, const char* details) {
 void getLastLog(void)
 {
     FILE* file = NULL;
-    char line[MAX_LOG_LEN];
-    char lastLine[MAX_LOG_LEN] = "";
+    char lines[MAX_LINES][MAX_LOG_LEN] = { 0 };
+    int lineCount = 0;
 
-    // fopen_s é mais seguro
     if (fopen_s(&file, "log.txt", "r") != 0 || file == NULL) {
         perror("Error opening file");
         return;
     }
 
-    while (fgets(line, sizeof(line), file)) {
-        strcpy_s(lastLine, sizeof(lastLine), line);
+    while (fgets(lines[lineCount], sizeof(lines[lineCount]), file)) {
+        lineCount++;
+        if (lineCount >= MAX_LINES) {
+            break;
+        }
     }
 
     fclose(file);
 
-    if (strlen(lastLine) > 0) {
-        printf("%s", lastLine);
-    }
-    else {
+    if (lineCount == 0) {
         printf("File is empty\n");
+        return;
     }
+
+    char lastLine[MAX_LOG_LEN];
+    strcpy_s(lastLine, sizeof(lastLine), lines[lineCount - 1]);
+
+	//Rewrites the log removing the last line from it
+    if (fopen_s(&file, "log.txt", "w") != 0 || file == NULL) {
+        perror("Error opening file for rewriting");
+        return;
+    }
+
+    for (int i = 0; i < lineCount - 1; i++) {
+        fputs(lines[i], file);
+    }
+
+    fclose(file);
+
+    printf("%s", lastLine);
 }
