@@ -86,7 +86,7 @@ int popSnapshot(HashTable* destinationHT, SnapshotStack* stack) {
     free(topNode->snapshot);
     free(topNode);
 
-    logAction("POP", "SnapshotSaved!");
+	//logAction("POP", "SnapshotSaved!"); No need to log when you save the database, it will be saved in the file anyway
 
     return 1;
 }
@@ -245,8 +245,12 @@ void undo_last_action(HashTable* ht, SnapshotStack* stack) {
 		printf("No actions to undo!\n");
     }
     else {
+		getLastLog();
         printf("\nReverted the system to the last action\n");
-        //Implementation of printing the last log
+        //Implementation of printing the last log in the file
+
+
+
         syncDatabaseToFile(ht, "database.txt");
     }
 }
@@ -281,4 +285,34 @@ void logAction(const char* actionType, const char* details) {
 
     fprintf(file, "[%s] %s: %s\n", timeString, actionType, details);
     fclose(file);
+}
+
+// FUNCTION   : getLastLog
+// DESCRIPTION: Prints the last log in the log.txt file
+// PARAMETERS : none
+// RETURNS    : none
+void getLastLog(void)
+{
+    FILE* file = NULL;
+    char line[MAX_LOG_LEN];
+    char lastLine[MAX_LOG_LEN] = "";
+
+    // fopen_s é mais seguro
+    if (fopen_s(&file, "log.txt", "r") != 0 || file == NULL) {
+        perror("Error opening file");
+        return;
+    }
+
+    while (fgets(line, sizeof(line), file)) {
+        strcpy_s(lastLine, sizeof(lastLine), line);
+    }
+
+    fclose(file);
+
+    if (strlen(lastLine) > 0) {
+        printf("%s", lastLine);
+    }
+    else {
+        printf("File is empty\n");
+    }
 }

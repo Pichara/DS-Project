@@ -177,4 +177,4 @@ HashTable* copyHashTable(HashTable* original);
 void overwriteHashTable(HashTable* destinationHT, HashTable* sourceHT);
 void undo_last_action(HashTable* ht, SnapshotStack* stack);
 void logAction(const char* actionType, const char* details);
-
+void getLastLog(void);

@@ -1,42 +1,3 @@
-[2025-03-29 14:52:51] POP: SnapshotSaved!
-[2025-03-29 14:53:00] POP: SnapshotSaved!
-[2025-03-29 16:13:43] Add User: User NewUser added
-[2025-03-29 16:13:49] Add Book: Book Test added
-[2025-03-29 16:14:23] Remove Book: Book test7 removed
-[2025-03-29 16:14:31] Remove User: User test7 removed
-[2025-04-01 10:57:30] Remove Book: Book The Design of Everyday Things removed
-[2025-04-01 11:01:04] Add User: User Reilly added
-[2025-04-01 11:02:27] Remove User: User Reilly removed
-[2025-04-01 11:13:27] Add User: User Reilly added
-[2025-04-01 11:13:51] Add User: User Reilly added
-[2025-04-01 11:19:52] Update User: User Reilly, changed to Dequavious 
-[2025-04-01 11:25:55] Add Book: Book The Ballard of Songbirds and Snakes added
-[2025-04-01 11:28:20] Update Book: Book The Ballard of Songbirds and Snakes, changed to The Hunger Games with the author 
-[2025-04-01 11:37:40] Add Book: Book The Hunger Games added
-[2025-04-01 11:40:14] Add Book: Book The Hunger Games added
-[2025-04-01 11:45:08] Add Book: Book The Hunger Games added
-[2025-04-01 11:48:46] Borrow Book: Book 'The Hunger Games' is now borrowed by 'Tatiana Cruz'
-[2025-04-01 11:48:54] POP: SnapshotSaved!
-[2025-04-01 11:49:17] Borrow Book: Book 'The Hunger Games' is now borrowed by 'Tatiana Cruz'
-[2025-04-01 11:49:25] POP: SnapshotSaved!
-[2025-04-01 11:50:01] Add User: User Olecqysndj added
-[2025-04-01 11:50:11] POP: SnapshotSaved!
-[2025-04-01 12:08:23] Remove User: User Reilly removed
-[2025-04-01 12:09:03] Remove User: User ЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭ­тќf“ ЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭ­тќf“ removed
-[2025-04-01 12:10:51] Add User: User Reilly added
-[2025-04-01 12:16:17] Add User: User Reilly added
-[2025-04-01 12:18:46] Add Book: Book The Hunger Games added
-[2025-04-01 12:19:57] Add User: User Reilly added
-[2025-04-01 12:22:41] Add User: User Reilly added
-[2025-04-01 12:24:10] Add User: User Reilly added
-[2025-04-01 12:24:52] Remove User: User ЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭ ЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭ removed
-[2025-04-01 12:28:07] Remove User: User ЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭR±uv± ЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭR±uv± removed
-[2025-04-01 12:29:16] Remove User: User ЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭ ЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭ removed
-[2025-04-01 12:33:17] Remove User: User Nicholas Reilly removed
-[2025-04-01 12:35:43] Add User: User Reilly added
-[2025-04-01 12:35:48] Add User: User Reilly added
-[2025-04-01 12:35:56] Add User: User Reilly added
-[2025-04-01 12:36:20] Remove User: User Nicholas Reilly removed
-[2025-04-01 12:36:44] Add User: User Blah added
-[2025-04-01 12:37:03] Remove User: User Rebecca Reilly removed
-[2025-04-01 12:37:18] Remove User: User Elliot Reilly removed
+[2025-04-09 11:36:50] Remove Book: Book The Hunger Games removed
+[2025-04-09 11:36:53] POP: SnapshotSaved!
+[2025-04-09 11:38:50] Remove Book: Book The Hunger Games removed

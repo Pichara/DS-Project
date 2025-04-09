@@ -32,19 +32,21 @@ void removeBook(HashTable* ht) {
             }
             free(current);
             printf("The book '%s' was removed successfully\n", title);
+            
+            //Logging
+            snprintf(log_message, sizeof(log_message), "Book %s removed", title);
+            logAction("Remove Book", log_message);
+            
+            
+            //Remove the book from the file | Pichara implementing..
+            syncDatabaseToFile(ht, "database.txt");
+
             return;
         }
         prev = current;
         current = current->next;
     }
     printf("Book '%s' not found\n", title);
-
-    //Logging
-    snprintf(log_message, sizeof(log_message), "Book %s removed", title);
-    logAction("Remove Book", log_message);
-
-	//Remove the book from the file | Pichara implementing..
-    syncDatabaseToFile(ht, "database.txt");
 }
 
 
