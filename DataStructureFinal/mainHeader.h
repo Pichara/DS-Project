@@ -60,6 +60,12 @@ typedef enum {
     BACK_DISP
 } displayOptions;
 
+typedef enum {
+	LAST_ACTION = 1,
+	PRINT_LOGS,
+	BACK_LAST_ACTION
+} lastActionOptions;
+
 //============================== Structs ==============================\\
 
 typedef struct User {
@@ -179,3 +185,5 @@ void overwriteHashTable(HashTable* destinationHT, HashTable* sourceHT);
 void undo_last_action(HashTable* ht, SnapshotStack* stack);
 void logAction(const char* actionType, const char* details);
 void getLastLog(void);
+void lastActionMenu(HashTable* ht, SnapshotStack* stack);
+void printLogs(void);

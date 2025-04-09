@@ -456,7 +456,8 @@ void returnBook(HashTable* ht) {
 //
 void processBookMenu(HashTable* ht, SnapshotStack* undoStack) {
 	checkOutOptions choice;
-    printf("Please choose an option:\n");
+    do {
+    printf("\nPlease choose an option:\n");
     printf("1. Borrow a book\n");
     printf("2. Return a book\n");
     printf("3. Back\n");
@@ -476,6 +477,7 @@ void processBookMenu(HashTable* ht, SnapshotStack* undoStack) {
     default:
         printf("Invalid choice!\n");
     }
+	} while (choice != BACK_PROCESS);
 }
 
 //
@@ -543,24 +545,26 @@ User* dequeueUser(Book* book) {
 //
 void databaseMenu(HashTable* ht) {
     displayOptions choice;
-    printf("Please choose an option:\n");
-    printf("1. View all books\n");
-    printf("2. View all users\n");
-    printf("3. Back\n");
-    printf("Enter your choice: ");
-    choice = (displayOptions)GetValidIntegerInput();
-    switch (choice) {
-    case DISP_BOOK:
-        printBooks(ht);
-        break;
-    case DISP_USER:
-        printUsers(ht);
-        break;
-    case BACK_DISP:
-        break;
-    default:
-        printf("Please only enter the valid integer options (1,2)\n");
-    }
+    do {
+        printf("Please choose an option:\n");
+        printf("1. View all books\n");
+        printf("2. View all users\n");
+        printf("3. Back\n");
+        printf("Enter your choice: ");
+        choice = (displayOptions)GetValidIntegerInput();
+        switch (choice) {
+        case DISP_BOOK:
+            printBooks(ht);
+            break;
+        case DISP_USER:
+            printUsers(ht);
+            break;
+        case BACK_DISP:
+            break;
+        default:
+            printf("Please only enter the valid integer options (1,2)\n");
+        }
+    } while (choice != BACK_DISP);
 }
 
 // ================== BINARY SEARCH TREE FUNCTIONS ==================

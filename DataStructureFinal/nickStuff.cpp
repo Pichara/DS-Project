@@ -22,28 +22,29 @@ void mainMenu(void) {
                 choice = (mainMenuOptions)GetValidIntegerInput();
                 switch (choice) {
                 case MANAGE_USER:
-                    printf("\nManage Users:\n");
+                    printf("\n======= Manage Users =======\n");
 					manageUserMenu(&ht, myUndoStack);
                     break;
                 case MANAGE_BOOK:
-                    printf("\nManage Books:\n");
+                    printf("\n======= Manage Books =======\n");
                     manageBookMenu(&ht, myUndoStack);
                     break;
                 case SEARCH_SYS:
-                    printf("\nSearch System:\n");
+                    printf("\n======= Search System =======\n");
                     searchMenu(&ht);
                     break;
                 case CHECK_BOOKOUT:
-			        printf("\nProcess book:\n");
+			        printf("\n======= Process book =======\n");
 					processBookMenu(&ht, myUndoStack);
                     break;
                 case DISPLAY_DB:
-                    printf("\nDisplaying Database:\n");
+                    printf("\n======= Displaying Database =======\n");
                     databaseMenu(&ht);
                     break;
                 case UNDO:
-			        printf("\nUndoing last action:\n");
-			        undo_last_action(&ht, myUndoStack);
+			        //printf("\nUndoing last action:\n");
+                    lastActionMenu(&ht, myUndoStack);
+                    //undo_last_action(&ht, myUndoStack);
                     break;
                 case EXIT:
                     printf("\nExiting program...\n");
@@ -71,7 +72,7 @@ void displayMainMenu() {
     printf("3. Search system\n");
     printf("4. Process book\n");
     printf("5. Display database\n");
-    printf("6. Undo last action\n");
+    printf("6. Last action\n");
     printf("7. Exit the program\n");
     printf("Enter your choice: ");
 }
@@ -85,7 +86,8 @@ void displayMainMenu() {
 //
 void manageUserMenu(HashTable* ht, SnapshotStack* undoStack) {
     manageUserOptions choice;
-    printf("Please choose an option:\n");
+    do {
+    printf("\nPlease choose an option:\n");
     printf("1. Add a new user\n");
     printf("2. Remove exisitng user\n");
 	printf("3. Update existing user\n");
@@ -110,6 +112,7 @@ void manageUserMenu(HashTable* ht, SnapshotStack* undoStack) {
     default:
         printf("Please only enter the valid integer options (1,2,3)\n");
     }
+    } while (choice != BACK_USER);
 }
 
 //
@@ -121,7 +124,7 @@ void manageUserMenu(HashTable* ht, SnapshotStack* undoStack) {
 //
 void manageBookMenu(HashTable* ht, SnapshotStack* undoStack) {
     manageBookOptions choice;
-    printf("Please choose an option:\n");
+    printf("\nPlease choose an option:\n");
     printf("1. Add a books\n");
     printf("2. Remove existing book\n");
 	printf("3. Update existing book\n");
@@ -159,7 +162,8 @@ void manageBookMenu(HashTable* ht, SnapshotStack* undoStack) {
 //
 void searchMenu(HashTable* ht) {
     searchOptions choice;
-    printf("Please choose an option:\n");
+    do {
+    printf("\nPlease choose an option:\n");
     printf("1. Search for books\n");
     printf("2. Search for users\n");
     printf("3. Back\n");
@@ -176,7 +180,8 @@ void searchMenu(HashTable* ht) {
         break;
     default:
         printf("Please only enter the valid integer options (1,2)\n");
-    }
+	}
+	} while (choice != BACK_SEARCH);
 }
 
 

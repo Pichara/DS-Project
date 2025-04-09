@@ -333,3 +333,53 @@ void getLastLog(void)
 
     printf("%s", lastLine);
 }
+
+
+void lastActionMenu(HashTable* ht, SnapshotStack* stack) {
+	lastActionOptions choice;
+	do {
+		printf("\nLast Action Menu:\n");
+		printf("1. Undo last action\n");
+		printf("2. Print logs\n");
+		printf("3. Back\n");
+		printf("Enter your choice: ");
+		choice = (lastActionOptions)GetValidIntegerInput();
+		
+        switch (choice) {
+		case LAST_ACTION:
+			undo_last_action(ht, stack);
+			break;
+		case PRINT_LOGS:
+			printLogs();
+			break;
+		case BACK_LAST_ACTION:
+			break;
+		default:
+			printf("Please only enter the valid integer options (1,3)\n");
+			break;
+		}
+	} while (choice != BACK_LAST_ACTION);
+}
+
+void printLogs(void) {
+	FILE* file = NULL;
+	char line[MAX_LOG_LEN];
+	int lineCount = 0;
+    int maxPrintLogs = 10; //The amount of lines of the log that this functions is going to print
+
+	if (fopen_s(&file, "log.txt", "r") != 0 || file == NULL) {
+		perror("Error opening file");
+		return;
+	}
+	
+    while (fgets(line, sizeof(line), file)) {
+		lineCount++;
+		printf("%s", line);
+		if (lineCount >= maxPrintLogs) {
+			break;
+		}
+	}
+	
+    fclose(file);
+}
+
