@@ -288,27 +288,27 @@ void logAction(const char* actionType, const char* details) {
 }
 
 // FUNCTION   : getLastLog
-// DESCRIPTION: Prints the last log in the log.txt file
+// DESCRIPTION: Prints the last log in the log.txt file and removes it from the file, 
+// this function uses a logic to minimize the ammount of memory in the stack that the function uses, saving (0.025mb)
 // PARAMETERS : none
 // RETURNS    : none
 void getLastLog(void)
 {
     FILE* file = NULL;
-    char lines[MAX_LINES][MAX_LOG_LEN] = { 0 };
+    char line[MAX_LOG_LEN];
+    char lastLine[MAX_LOG_LEN] = "";
     int lineCount = 0;
 
+	//Open the file in read mode to get the last log
     if (fopen_s(&file, "log.txt", "r") != 0 || file == NULL) {
-        perror("Error opening file");
+        perror("Error opening log.txt");
         return;
     }
 
-    while (fgets(lines[lineCount], sizeof(lines[lineCount]), file)) {
+    while (fgets(line, sizeof(line), file)) {
         lineCount++;
-        if (lineCount >= MAX_LINES) {
-            break;
-        }
+        strcpy_s(lastLine, sizeof(lastLine), line);
     }
-
     fclose(file);
 
     if (lineCount == 0) {
@@ -316,24 +316,37 @@ void getLastLog(void)
         return;
     }
 
-    char lastLine[MAX_LOG_LEN];
-    strcpy_s(lastLine, sizeof(lastLine), lines[lineCount - 1]);
-
-	//Rewrites the log removing the last line from it
-    if (fopen_s(&file, "log.txt", "w") != 0 || file == NULL) {
-        perror("Error opening file for rewriting");
+	//Reopen the file in read mode to remove the last log
+    if (fopen_s(&file, "log.txt", "r") != 0 || file == NULL) {
+        perror("Error reopening log.txt");
         return;
     }
 
-    for (int i = 0; i < lineCount - 1; i++) {
-        fputs(lines[i], file);
+	//Create a temporary file to store the contents without the last line
+    FILE* tempFile = NULL;
+    if (fopen_s(&tempFile, "temp.txt", "w") != 0 || tempFile == NULL) {
+        perror("Error creating temp.txt");
+        fclose(file);
+        return;
+    }
+
+	//Writes the file again without the last line and then rename it to the original file
+    int currentLine = 0;
+    while (fgets(line, sizeof(line), file)) {
+        currentLine++;
+        if (currentLine < lineCount) {
+            fputs(line, tempFile);
+        }
     }
 
     fclose(file);
+    fclose(tempFile);
+
+    remove("log.txt");
+    (void)rename("temp.txt", "log.txt");
 
     printf("%s", lastLine);
 }
-
 
 void lastActionMenu(HashTable* ht, SnapshotStack* stack) {
 	lastActionOptions choice;

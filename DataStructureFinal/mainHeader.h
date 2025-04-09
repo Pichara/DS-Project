@@ -14,7 +14,7 @@
 #define MAX_NAME_LEN 50
 #define TABLE_SIZE 1000
 #define MAX_LOG_LEN 256
-#define MAX_LINES 1000
+#define MAX_LINES 100
 
 //============================== Enums ==============================\\
 

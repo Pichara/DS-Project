@@ -546,7 +546,7 @@ User* dequeueUser(Book* book) {
 void databaseMenu(HashTable* ht) {
     displayOptions choice;
     do {
-        printf("Please choose an option:\n");
+        printf("\nPlease choose an option:\n");
         printf("1. View all books\n");
         printf("2. View all users\n");
         printf("3. Back\n");

@@ -42,9 +42,8 @@ void mainMenu(void) {
                     databaseMenu(&ht);
                     break;
                 case UNDO:
-			        //printf("\nUndoing last action:\n");
+			        printf("\n======= Last Actions =======\n");
                     lastActionMenu(&ht, myUndoStack);
-                    //undo_last_action(&ht, myUndoStack);
                     break;
                 case EXIT:
                     printf("\nExiting program...\n");
