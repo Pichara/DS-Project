@@ -124,7 +124,7 @@ void manageUserMenu(HashTable* ht, SnapshotStack* undoStack) {
 void manageBookMenu(HashTable* ht, SnapshotStack* undoStack) {
     manageBookOptions choice;
     printf("\nPlease choose an option:\n");
-    printf("1. Add a books\n");
+    printf("1. Add a book\n");
     printf("2. Remove existing book\n");
 	printf("3. Update existing book\n");
     printf("4. Back\n");

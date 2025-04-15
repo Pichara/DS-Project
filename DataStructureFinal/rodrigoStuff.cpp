@@ -351,17 +351,49 @@ void borrowBook(HashTable* ht) {
     fgets(lastName, sizeof(lastName), stdin);
     lastName[strcspn(lastName, "\n")] = '\0';
 
+    int userHash = generateUserHash(lastName);
+    int index = userHash % TABLE_SIZE;
+
+    User* current = ht->users[index];
+    User* matchedUsers[10];
+    int userCount = 0;
+
+    //Collect users with the same hash and last name
+    while (current != NULL) {
+        if (current->userId == userHash && strcmp(current->lastName, lastName) == 0) {
+            if (userCount < 10) {
+                matchedUsers[userCount++] = current;
+                printf("%d: %s %s (ID: %d)\n", userCount, current->firstName, current->lastName, current->userId);
+            }
+        }
+        current = current->next;
+    }
+
+    if (userCount == 0) {
+        printf("User '%s' not found.\n", lastName);
+        return;
+    }
+
+    User* user = NULL;
+    if (userCount == 1) {
+        user = matchedUsers[0];
+    }
+    else {
+        int selected = -1;
+        printf("Multiple users found. Select one (1-%d): ", userCount);
+        scanf_s("%d", &selected);
+        (void)getchar(); 
+        if (selected < 1 || selected > userCount) {
+            printf("Invalid selection.\n");
+            return;
+        }
+        user = matchedUsers[selected - 1];
+    }
+
+    //Get the book title
     printf("Enter the title of the book to borrow: ");
     fgets(bookTitle, sizeof(bookTitle), stdin);
     bookTitle[strcspn(bookTitle, "\n")] = '\0';
-
-    //Look up user and book
-    int userHash = generateUserHash(lastName);
-    User* user = searchUserByHash(ht, userHash);
-    if (!user) {
-        printf("User '%s' not found\n", lastName);
-        return;
-    }
 
     int bookHash = generateBookHash(bookTitle);
     Book* book = searchBookByHash(ht, bookHash);
@@ -388,9 +420,10 @@ void borrowBook(HashTable* ht) {
         logAction("Borrow Book", log_message);
     }
 
-    //Update the book in the file | Pichara implementing...
+    //Sync to file
     syncDatabaseToFile(ht, "database.txt");
 }
+
 
 
 //

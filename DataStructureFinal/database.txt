@@ -1,20 +1,4 @@
-USER,102,Rodrigo,C#
-USER,309,Randon,Guy
-USER,375,Blah,Blah
-USER,392,Luisa,Diaz
-USER,420,Tatiana,Cruz
-USER,507,Rodrigo,Gomes
-USER,547,test,test30
-USER,554,Test82,test82
-USER,592,Python,NoMore
-USER,696,Rodrigo,Pichara
-USER,713,SomeUser,NewUser
-USER,777,Test2,testsim
-USER,953,C#,Supremacy
-BOOK,349,C Fundamentals,Me,0,-1
-BOOK,416,Test,Test2,0,-1
-BOOK,432,A arte da guerra,Sun Tzu,0,-1
-BOOK,463,The Hunger Games,Me,0,-1
-BOOK,463,The Hunger Games,Me,0,-1
+USER,625,Alexander Reilly,Reilly
+USER,625,Nicholas,Reilly
 BOOK,463,The Hunger Games,Suzanne Collins,0,-1
-BOOK,463,The Hunger Games,Me,0,-1
+BOOK,830,The Giver,Ruel Luchia,1,625

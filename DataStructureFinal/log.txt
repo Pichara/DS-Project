@@ -6,3 +6,12 @@
 [2025-04-09 12:13:20] Add User: User NoMore added
 [2025-04-09 12:13:45] Add User: User Supremacy added
 [2025-04-09 12:14:29] Add User: User test30 added
+[2025-04-15 11:02:39] Add User: User Reilly added
+[2025-04-15 11:04:57] Add User: User Reilly added
+[2025-04-15 11:06:15] Remove User: User Alexander Reilly removed
+[2025-04-15 11:08:47] Add Book: Book The Hunger Games added
+[2025-04-15 11:10:13] Remove Book: Book The Hunger Games removed
+[2025-04-15 11:12:59] Add Book: Book The Giver added
+[2025-04-15 11:41:07] Add User: User Reilly added
+[2025-04-15 11:41:25] Borrow Book: Book 'The Giver' is now borrowed by 'Nicholas Reilly'
+[2025-04-15 11:42:35] Add Book: Book The Hunger Games added
