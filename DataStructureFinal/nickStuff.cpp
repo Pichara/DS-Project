@@ -65,7 +65,7 @@ void mainMenu(void) {
 // RETURNS    : none
 //
 void displayMainMenu() {
-    printf("\nLibAid Book System v2.00\n");
+    printf("\nLibAid Book System v3.00\n");
     printf("1. Manage users\n");
     printf("2. Manage books\n");
     printf("3. Search system\n");
@@ -88,7 +88,7 @@ void manageUserMenu(HashTable* ht, SnapshotStack* undoStack) {
     do {
     printf("\nPlease choose an option:\n");
     printf("1. Add a new user\n");
-    printf("2. Remove exisitng user\n");
+    printf("2. Remove existing user\n");
 	printf("3. Update existing user\n");
     printf("4. Back\n");
     printf("Enter your choice: ");
@@ -100,11 +100,11 @@ void manageUserMenu(HashTable* ht, SnapshotStack* undoStack) {
         break;
     case REMOVE_USER:
         pushSnapshot(ht, undoStack);
-		removeUser(ht); //Pichara implementing...
+		removeUser(ht); 
 		break;
     case UPDATE_USER:
         pushSnapshot(ht, undoStack);
-		updateUser(ht); //Pichara implementing...
+		updateUser(ht);
 		break;
     case BACK_USER:
         break;

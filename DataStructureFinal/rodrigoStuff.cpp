@@ -38,7 +38,7 @@ void removeBook(HashTable* ht) {
             logAction("Remove Book", log_message);
             
             
-            //Remove the book from the file | Pichara implementing..
+            //Remove the book from the file
             syncDatabaseToFile(ht, "database.txt");
 
             return;

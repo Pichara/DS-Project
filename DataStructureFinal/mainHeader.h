@@ -136,7 +136,7 @@ void processBookMenu(HashTable* ht, SnapshotStack* UndoStack);
 void returnBook(HashTable* ht);
 void borrowBook(HashTable* ht);
 
-//Stack Functions
+//Queue Functions
 void enqueueUser(Book* book, User* user);
 User* dequeueUser(Book* book);
 
@@ -175,6 +175,8 @@ void manageUserMenu(HashTable* ht, SnapshotStack* undoStack);
 void manageBookMenu(HashTable* ht, SnapshotStack* undoStack);
 
 //--------------------------- tatianaStuff ---------------------------\\
+
+//Stacks
 
 SnapshotStack* initSnapshotStack(void);
 void freeSnapshotStack(SnapshotStack** stack);
